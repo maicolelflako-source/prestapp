@@ -108,30 +108,35 @@ ALTER TABLE creditos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE abonos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE gastos ENABLE ROW LEVEL SECURITY;
 
--- Rutas: all authenticated can read
-CREATE POLICY "Authenticated can view rutas"
+-- Rutas: anyone can read (needed for registration form)
+DROP POLICY IF EXISTS "Anyone can view rutas" ON rutas;
+CREATE POLICY "Anyone can view rutas"
   ON rutas FOR SELECT
-  TO authenticated
+  TO public
   USING (true);
 
 -- Profiles: user reads/updates own profile
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 CREATE POLICY "Users can view own profile"
   ON profiles FOR SELECT
   TO authenticated
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile"
   ON profiles FOR UPDATE
   TO authenticated
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
 CREATE POLICY "Users can insert own profile"
   ON profiles FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = id);
 
 -- Clientes: users can manage clients in their ruta
+DROP POLICY IF EXISTS "Users can view clients in their ruta" ON clientes;
 CREATE POLICY "Users can view clients in their ruta"
   ON clientes FOR SELECT
   TO authenticated
@@ -141,6 +146,7 @@ CREATE POLICY "Users can view clients in their ruta"
     )
   );
 
+DROP POLICY IF EXISTS "Users can insert clients in their ruta" ON clientes;
 CREATE POLICY "Users can insert clients in their ruta"
   ON clientes FOR INSERT
   TO authenticated
@@ -150,6 +156,7 @@ CREATE POLICY "Users can insert clients in their ruta"
     )
   );
 
+DROP POLICY IF EXISTS "Users can update clients in their ruta" ON clientes;
 CREATE POLICY "Users can update clients in their ruta"
   ON clientes FOR UPDATE
   TO authenticated
@@ -157,16 +164,19 @@ CREATE POLICY "Users can update clients in their ruta"
   WITH CHECK (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
 -- Creditos
+DROP POLICY IF EXISTS "Users can view creditos in their ruta" ON creditos;
 CREATE POLICY "Users can view creditos in their ruta"
   ON creditos FOR SELECT
   TO authenticated
   USING (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Users can insert creditos in their ruta" ON creditos;
 CREATE POLICY "Users can insert creditos in their ruta"
   ON creditos FOR INSERT
   TO authenticated
   WITH CHECK (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Users can update creditos in their ruta" ON creditos;
 CREATE POLICY "Users can update creditos in their ruta"
   ON creditos FOR UPDATE
   TO authenticated
@@ -174,27 +184,32 @@ CREATE POLICY "Users can update creditos in their ruta"
   WITH CHECK (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
 -- Abonos
+DROP POLICY IF EXISTS "Users can view abonos in their ruta" ON abonos;
 CREATE POLICY "Users can view abonos in their ruta"
   ON abonos FOR SELECT
   TO authenticated
   USING (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Users can insert abonos in their ruta" ON abonos;
 CREATE POLICY "Users can insert abonos in their ruta"
   ON abonos FOR INSERT
   TO authenticated
   WITH CHECK (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
 -- Gastos
+DROP POLICY IF EXISTS "Users can view gastos in their ruta" ON gastos;
 CREATE POLICY "Users can view gastos in their ruta"
   ON gastos FOR SELECT
   TO authenticated
   USING (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Users can insert gastos in their ruta" ON gastos;
 CREATE POLICY "Users can insert gastos in their ruta"
   ON gastos FOR INSERT
   TO authenticated
   WITH CHECK (ruta_id IN (SELECT ruta_id FROM profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Users can delete own gastos" ON gastos;
 CREATE POLICY "Users can delete own gastos"
   ON gastos FOR DELETE
   TO authenticated
@@ -222,21 +237,42 @@ CREATE TABLE IF NOT EXISTS suscripciones (
 
 ALTER TABLE suscripciones ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own suscripcion" ON suscripciones;
 CREATE POLICY "Users can view own suscripcion"
   ON suscripciones FOR SELECT
   TO authenticated
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can insert own suscripcion" ON suscripciones;
 CREATE POLICY "Users can insert own suscripcion"
   ON suscripciones FOR INSERT
   TO authenticated
   WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update own suscripcion" ON suscripciones;
 CREATE POLICY "Users can update own suscripcion"
   ON suscripciones FOR UPDATE
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
+
+-- Function: create_profile (called on sign-up)
+CREATE OR REPLACE FUNCTION create_profile(
+  p_id uuid,
+  p_nombre text,
+  p_email text,
+  p_codigo text,
+  p_ruta_id uuid
+) RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  INSERT INTO profiles (id, nombre, email, codigo, ruta_id, rol, activo)
+  VALUES (p_id, p_nombre, p_email, p_codigo, p_ruta_id, 'cobrador', true);
+END;
+$$;
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_clientes_ruta ON clientes(ruta_id);

@@ -50,7 +50,13 @@ export default function AuthScreen() {
       err = await signUp(email, password, nombre, codigo, rutaId);
     }
     setLoading(false);
-    if (err) setError(err);
+    if (err) {
+      if (err.toLowerCase().includes('rate limit') || err.toLowerCase().includes('email_rate_limit')) {
+        setError('Demasiados intentos. Espera 1 minuto e inténtalo de nuevo.');
+      } else {
+        setError(err);
+      }
+    }
   }
 
   return (
@@ -153,11 +159,11 @@ export default function AuthScreen() {
             />
           </div>
 
-          {mode === 'register' && (
+          {mode === 'register' && rutas.length > 0 && (
             <div className="auth-field">
               <Shield size={15} className="auth-field-icon" />
               <select value={rutaId} onChange={e => setRutaId(e.target.value)}>
-                <option value="">— Selecciona tu ruta —</option>
+                <option value="">— Selecciona tu ruta (opcional) —</option>
                 {rutas.map(r => (
                   <option key={r.id} value={r.id}>{r.nombre}</option>
                 ))}

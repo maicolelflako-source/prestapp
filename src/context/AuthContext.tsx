@@ -79,7 +79,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select('*')
         .eq('id', data.user.id)
         .maybeSingle();
-      if (prof && prof.codigo !== codigo) {
+      if (!prof) {
+        await supabase.auth.signOut();
+        return 'Usuario no encontrado. Debes registrarte primero.';
+      }
+      if (prof.codigo !== codigo) {
         await supabase.auth.signOut();
         return 'Código de acceso incorrecto.';
       }
@@ -97,16 +101,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) return error.message;
     if (data.user) {
-      const { error: pe } = await supabase.from('profiles').insert({
-        id: data.user.id,
-        nombre,
-        email,
-        codigo,
-        ruta_id: rutaId || null,
-        rol: 'cobrador',
-        activo: true,
+      const { error: pe } = await supabase.rpc('create_profile', {
+        p_id: data.user.id,
+        p_nombre: nombre,
+        p_email: email,
+        p_codigo: codigo,
+        p_ruta_id: rutaId || null,
       });
-      if (pe) return pe.message;
+      if (pe) {
+        await supabase.auth.signOut();
+        return 'Error al crear tu perfil. Intenta de nuevo más tarde.';
+      }
     }
     return null;
   }
