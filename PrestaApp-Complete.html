@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrestaApp — Sistema Premium de Préstamos v2.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════
+       PRESTAPP — DESIGN SYSTEM
+       Black #000000 | Gold #EFBF04
+    ═══════════════════════════════════════════════ */
+
+    :root {
+      --gold: #EFBF04;
+      --gold-dim: #c9a003;
+      --gold-dark: #8a6d00;
+      --gold-glow: rgba(239,191,4,0.15);
+      --gold-bg: rgba(239,191,4,0.08);
+      --black: #000000;
+      --surface: #0a0a0a;
+      --surface2: #111111;
+      --surface3: #181818;
+      --surface4: #222222;
+      --border: rgba(239,191,4,0.15);
+      --border2: rgba(239,191,4,0.25);
+      --text: #f0e8cc;
+      --text2: #b8a870;
+      --text3: #6b5e30;
+      --text-muted: #444;
+      --green: #22c55e;
+      --green-bg: rgba(34,197,94,0.1);
+      --red: #ef4444;
+      --red-bg: rgba(239,68,68,0.1);
+      --blue: #3b82f6;
+      --blue-bg: rgba(59,130,246,0.1);
+      --orange: #f97316;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --radius-lg: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; font-size: 13px; background: var(--black); color: var(--text); overflow: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+
+    /* ═══════════════════════════════════════════════
+       AUTH SCREEN
+    ═══════════════════════════════════════════════ */
+
+    .auth-bg {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: 0;
+      animation: float calc(6s + var(--i, 0) * 0.4s) ease-in-out infinite;
+      left: calc(var(--i, 0) * 5% + 2%);
+      top: 100%;
+    }
+
+    @keyframes float {
+      0% { top: 100%; opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.3; }
+      100% { top: -5%; opacity: 0; }
+    }
+
+    .auth-card {
+      position: relative;
+      z-index: 10;
+      width: 380px;
+      max-width: 94vw;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px 24px;
+      box-shadow: 0 0 60px rgba(239,191,4,0.08), 0 24px 60px rgba(0,0,0,0.8);
+    }
+
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .auth-logo-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--gold-bg);
+      border: 1.5px solid var(--gold);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-size: 24px;
+      box-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    .auth-logo-text { display: flex; flex-direction: column; }
+    .auth-logo-name { font-size: 20px; font-weight: 800; color: var(--gold); letter-spacing: 0.5px; }
+    .auth-logo-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+    .auth-premium {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .premium-badge {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      color: var(--gold);
+    }
+
+    .premium-text {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-shadow: 0 0 8px var(--gold-glow);
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: var(--surface3);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text3);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: calc(var(--radius-sm) - 2px);
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .auth-tab.active {
+      background: var(--gold);
+      color: var(--black);
+      box-shadow: 0 2px 8px var(--gold-glow);
+    }
+
+    .auth-form { display: flex; flex-direction: column; gap: 12px; }
+
+    .auth-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-field-icon {
+      position: absolute;
+      left: 12px;
+      color: var(--gold-dark);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .auth-field input,
+    .auth-field select {
+      width: 100%;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 12px 11px 36px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .auth-field select { padding-left: 36px; }
+
+    .auth-field input:focus,
+    .auth-field select:focus {
+      border-color: var(--gold);
+      background: var(--surface4);
+      box-shadow: 0 0 0 2px var(--gold-glow);
+    }
+
+    .auth-field input::placeholder { color: var(--text-muted); }
+    .auth-field select option { background: var(--surface3); color: var(--text); }
+
+    .pwd-toggle {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .pwd-toggle:hover { color: var(--gold); }
+
+    .auth-error {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+
+    .auth-terms-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text2);
+      cursor: pointer;
+    }
+
+    .auth-terms-check input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .terms-link {
+      background: none;
+      border: none;
+      color: var(--gold);
+      cursor: pointer;
+      font-size: inherit;
+      font-family: inherit;
+      text-decoration: underline;
+      padding: 0;
+      text-underline-offset: 2px;
+    }
+
+    .terms-link:hover { color: #fff; }
+
+    .auth-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px var(--gold-glow);
+    }
+
+    .auth-btn:hover:not(:disabled) {
+      background: #ffd117;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(239,191,4,0.35);
+    }
+
+    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .auth-footer-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text3);
+      line-height: 1.5;
+    }
+
+    .terms-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 9000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .terms-overlay.open { display: flex; }
+
+    .terms-modal {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      width: 540px;
+      max-width: 100%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.2s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .terms-head {
+      padding: 16px 20px;
+      background: var(--surface3);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .terms-head button {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .terms-head button:hover { color: var(--gold); }
+
+    .terms-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .terms-body h4 {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin: 16px 0 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .terms-body h4:first-child { margin-top: 0; }
+
+    .terms-body p {
+      color: var(--text2);
+      font-size: 12px;
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+
+    .terms-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .terms-accept-btn {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 9px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .terms-accept-btn:hover { background: #ffd117; }
+
+    /* Demo notice */
+    .demo-notice {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: var(--gold-bg);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 100;
+      letter-spacing: 0.3px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="auth-bg">
+  <!-- Animated particles -->
+  <div class="auth-particles">
+    <div class="particle" style="--i: 0;"></div>
+    <div class="particle" style="--i: 1;"></div>
+    <div class="particle" style="--i: 2;"></div>
+    <div class="particle" style="--i: 3;"></div>
+    <div class="particle" style="--i: 4;"></div>
+    <div class="particle" style="--i: 5;"></div>
+    <div class="particle" style="--i: 6;"></div>
+    <div class="particle" style="--i: 7;"></div>
+    <div class="particle" style="--i: 8;"></div>
+    <div class="particle" style="--i: 9;"></div>
+  </div>
+
+  <div class="auth-card">
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon">💰</div>
+      <div class="auth-logo-text">
+        <span class="auth-logo-name">PrestaApp</span>
+        <span class="auth-logo-sub">v2.1 — Sistema Premium</span>
+      </div>
+    </div>
+
+    <!-- Premium badge -->
+    <div class="auth-premium">
+      <div class="premium-badge">⭐ ⭐ ⭐</div>
+      <span class="premium-text">PREMIUM</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Ingresar</button>
+      <button class="auth-tab" onclick="switchTab('register')">Registrarse</button>
+    </div>
+
+    <!-- Form -->
+    <form class="auth-form" id="authForm" onsubmit="handleSubmit(event)">
+      <!-- Register name (hidden by default) -->
+      <div class="auth-field" id="nameField" style="display: none;">
+        <span class="auth-field-icon">👤</span>
+        <input type="text" id="nombre" placeholder="Nombre completo" autocomplete="name">
+      </div>
+
+      <!-- Email -->
+      <div class="auth-field">
+        <span class="auth-field-icon">📧</span>
+        <input type="email" id="email" placeholder="Correo electrónico" autocomplete="email" required>
+      </div>
+
+      <!-- Password -->
+      <div class="auth-field">
+        <span class="auth-field-icon">🔒</span>
+        <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" id="pwdInput" required>
+        <button type="button" class="pwd-toggle" onclick="togglePwd()">👁</button>
+      </div>
+
+      <!-- Code -->
+      <div class="auth-field">
+        <span class="auth-field-icon">🔑</span>
+        <input type="text" id="codigo" placeholder="Código de acceso" autocomplete="off" maxlength="20" required>
+      </div>
+
+      <!-- Register route (hidden by default) -->
+      <div class="auth-field" id="rutaField" style="display: none;">
+        <span class="auth-field-icon">🌍</span>
+        <select id="ruta">
+          <option value="">— Selecciona tu ruta —</option>
+          <option value="YULIANPLAYA">YULIANPLAYA</option>
+          <option value="NORTE">NORTE</option>
+          <option value="SUR">SUR</option>
+          <option value="CENTRO">CENTRO</option>
+        </select>
+      </div>
+
+      <!-- Error message -->
+      <div id="errorMsg" class="auth-error" style="display: none;"></div>
+
+      <!-- Terms checkbox (register only) -->
+      <label class="auth-terms-check" id="termsCheck" style="display: none;">
+        <input type="checkbox" id="termsAccepted">
+        <span>Acepto los <button type="button" class="terms-link" onclick="openTerms()">Términos y Condiciones</button> y la Política de Privacidad</span>
+      </label>
+
+      <!-- Submit button -->
+      <button type="submit" class="auth-btn">
+        <span id="btnText">INGRESAR</span> →
+      </button>
+    </form>
+
+    <!-- Footer note -->
+    <div class="auth-footer-note">
+      🛡 Al ingresar, aceptas nuestros <button type="button" class="terms-link" onclick="openTerms()" style="padding: 0; display: inline;">Términos y Condiciones</button> y reconoces que tus datos serán tratados según la Política de Privacidad.
+    </div>
+  </div>
+</div>
+
+<!-- Terms modal -->
+<div class="terms-overlay" id="termsModal">
+  <div class="terms-modal" onclick="event.stopPropagation()">
+    <div class="terms-head">
+      🛡 Términos y Condiciones — PrestaApp
+      <button type="button" onclick="closeTerms()">✕</button>
+    </div>
+    <div class="terms-body">
+      <h4>1. Aceptación de Términos</h4>
+      <p>Al registrarse y utilizar PrestaApp, el usuario acepta plenamente los presentes Términos y Condiciones de uso. Si no está de acuerdo con alguno de ellos, no debe hacer uso de la plataforma.</p>
+
+      <h4>2. Uso del Servicio</h4>
+      <p>PrestaApp es una plataforma de gestión de carteras de crédito destinada exclusivamente a cobradores y administradores de rutas de préstamo. Queda prohibido su uso para actividades ilícitas, fraude o cualquier fin contrario a la ley.</p>
+
+      <h4>3. Privacidad de Datos</h4>
+      <p>Los datos personales ingresados en la plataforma son tratados con estricta confidencialidad conforme a la normativa de protección de datos vigente. PrestaApp no comparte información personal con terceros sin consentimiento expreso del usuario.</p>
+
+      <h4>4. Responsabilidad</h4>
+      <p>El usuario es responsable de la exactitud de la información ingresada. PrestaApp no se hace responsable por pérdidas derivadas de datos incorrectos o uso indebido de la plataforma.</p>
+
+      <h4>5. Propiedad Intelectual</h4>
+      <p>Todo el contenido, diseño y código de PrestaApp es propiedad de sus desarrolladores. Queda prohibida su reproducción total o parcial sin autorización escrita.</p>
+
+      <h4>6. Modificaciones</h4>
+      <p>PrestaApp se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma y entrarán en vigencia a partir de su publicación.</p>
+
+      <h4>7. Suscripción Premium</h4>
+      <p>El acceso a las funcionalidades avanzadas requiere una suscripción activa. La suscripción es personal e intransferible. El incumplimiento de los términos puede resultar en la cancelación de la cuenta sin reembolso.</p>
+
+      <h4>8. Ley Aplicable</h4>
+      <p>Estos Términos se rigen por las leyes de la República de Colombia. Cualquier disputa será resuelta ante los tribunales competentes de dicha jurisdicción.</p>
+    </div>
+    <div class="terms-footer">
+      <button type="button" class="terms-accept-btn" onclick="acceptTerms()">Aceptar y cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Demo notice -->
+<div class="demo-notice">
+  DEMO — Para el acceso completo integra con Supabase en src/lib/supabase.ts
+</div>
+
+<script>
+  let currentTab = 'login';
+
+  function switchTab(tab) {
+    currentTab = tab;
+    const nameField = document.getElementById('nameField');
+    const rutaField = document.getElementById('rutaField');
+    const termsCheck = document.getElementById('termsCheck');
+    const btnText = document.getElementById('btnText');
+    const tabs = document.querySelectorAll('.auth-tab');
+
+    tabs.forEach((t, idx) => {
+      t.classList.toggle('active', (idx === 0 && tab === 'login') || (idx === 1 && tab === 'register'));
+    });
+
+    if (tab === 'register') {
+      nameField.style.display = 'flex';
+      rutaField.style.display = 'flex';
+      termsCheck.style.display = 'flex';
+      btnText.textContent = 'CREAR CUENTA';
+      document.getElementById('nombre').required = true;
+    } else {
+      nameField.style.display = 'none';
+      rutaField.style.display = 'none';
+      termsCheck.style.display = 'none';
+      btnText.textContent = 'INGRESAR';
+      document.getElementById('nombre').required = false;
+    }
+    document.getElementById('errorMsg').style.display = 'none';
+  }
+
+  function togglePwd() {
+    const input = document.getElementById('password');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const codigo = document.getElementById('codigo').value;
+    const errorMsg = document.getElementById('errorMsg');
+
+    if (!email || !password || !codigo) {
+      errorMsg.textContent = 'Completa todos los campos obligatorios.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    if (currentTab === 'register') {
+      const nombre = document.getElementById('nombre').value;
+      const ruta = document.getElementById('ruta').value;
+      const termsAccepted = document.getElementById('termsAccepted').checked;
+
+      if (!nombre || !ruta) {
+        errorMsg.textContent = 'Completa nombre y selecciona tu ruta.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      if (!termsAccepted) {
+        errorMsg.textContent = 'Debes aceptar los Términos y Condiciones para continuar.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      alert('✓ Registro exitoso\nNombre: ' + nombre + '\nEmail: ' + email + '\nRuta: ' + ruta + '\n\nEsta es una demostración. Para integración real, conecta a Supabase.');
+    } else {
+      alert('✓ Acceso iniciado\nEmail: ' + email + '\nCódigo: ' + codigo + '\n\nEsta es una demostración. Para integración real, conecta a Supabase.');
+    }
+  }
+
+  function openTerms() {
+    document.getElementById('termsModal').classList.add('open');
+  }
+
+  function closeTerms() {
+    document.getElementById('termsModal').classList.remove('open');
+  }
+
+  function acceptTerms() {
+    document.getElementById('termsAccepted').checked = true;
+    closeTerms();
+  }
+
+  // Close terms on overlay click
+  document.getElementById('termsModal').addEventListener('click', function(e) {
+    if (e.target === this) closeTerms();
+  });
+</script>
+
+</body>
+</html>

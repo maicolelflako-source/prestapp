@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrestaApp — Sistema de Préstamos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root{
+  --navy:#0b1f3a; --navy2:#112848; --navy3:#1b3d62;
+  --teal:#0d5c6e; --teal2:#0a4a59;
+  --accent:#2f80ed; --accent2:#1a6fd4;
+  --green:#27ae60; --green2:#1e8449; --green3:#a8d63f;
+  --red:#e74c3c; --red2:#c0392b;
+  --orange:#e67e22; --yellow:#f1c40f;
+  --purple:#6c3483; --purple2:#8e44ad;
+  --bg:#f0f3f8; --surface:#fff;
+  --border:#dde3ee; --border2:#c8d0e0;
+  --text:#1a2a3a; --text2:#4a5a6a; --text3:#8a9baa;
+  --sw:230px; --th:54px;
+  --row-yellow:#fffde7; --row-yellow-b:#f9a825;
+  --row-purple:#f3e5f5; --row-purple-b:#7b1fa2;
+  --row-green:#e8f5e9; --row-green-b:#2e7d32;
+  --row-blue:#e3f2fd; --row-blue-b:#1565c0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);overflow:hidden;}
+
+/* ═══ LAYOUT ═══ */
+.app{display:flex;height:100vh;}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:var(--sw);min-width:var(--sw);background:var(--teal);display:flex;flex-direction:column;overflow:hidden;}
+.sb-logo{padding:15px 14px 13px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:10px;}
+.sb-logo-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-logo-icon i{font-size:20px;color:#fff;}
+.sb-logo-name{color:#fff;font-size:15px;font-weight:700;letter-spacing:.3px;}
+.sb-logo-ver{color:rgba(255,255,255,.35);font-size:9px;margin-top:1px;}
+.sb-user{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:9px;}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-uname{color:#fff;font-size:12px;font-weight:500;}
+.sb-urole{color:rgba(255,255,255,.4);font-size:10px;}
+.sb-ruta{background:rgba(255,255,255,.12);color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:3px;display:inline-block;}
+.menu{flex:1;overflow-y:auto;padding:6px 0;}
+.menu::-webkit-scrollbar{width:3px;}
+.menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);}
+.menu-sec{padding:10px 14px 3px;font-size:9px;font-weight:700;letter-spacing:.8px;color:rgba(255,255,255,.25);text-transform:uppercase;}
+.mi{display:flex;align-items:center;gap:10px;padding:10px 14px;color:rgba(255,255,255,.65);cursor:pointer;border-left:2.5px solid transparent;transition:all .14s;font-size:12.5px;white-space:nowrap;}
+.mi:hover{background:rgba(255,255,255,.07);color:#fff;}
+.mi.active{background:rgba(255,255,255,.14);color:#fff;border-left-color:#fff;}
+.mi i{font-size:17px;width:20px;flex-shrink:0;text-align:center;}
+.mi .bc{margin-left:auto;background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;}
+.mi.danger{color:rgba(255,120,100,.75);}
+.mi.danger:hover{color:#ff8a7a;background:rgba(231,76,60,.12);}
+.mdiv{height:1px;background:rgba(255,255,255,.08);margin:3px 0;}
+.sb-bottom{padding:10px 14px;border-top:1px solid rgba(255,255,255,.1);}
+.sb-bottom-date{color:rgba(255,255,255,.45);font-size:10px;}
+
+/* ═══ MAIN ═══ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:var(--th);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0;}
+.tb-title{font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:7px;}
+.tb-title i{font-size:18px;color:var(--teal);}
+.tb-sep{flex:1;}
+.tb-search{position:relative;}
+.tb-search input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px 7px 30px;font-size:12px;font-family:'DM Sans',sans-serif;width:200px;outline:none;color:var(--text);}
+.tb-search input:focus{border-color:var(--accent);width:240px;}
+.tb-search i{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;}
+.tb-chip{background:#e8f4fd;color:#1565c0;border-radius:20px;padding:4px 11px;font-size:11px;font-weight:600;}
+.tb-chip.green{background:#e8f8ef;color:#1b5e20;}
+.tb-chip.orange{background:#fff3e0;color:#e65100;}
+.tb-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:17px;transition:all .14s;}
+.tb-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
+
+/* ═══ CONTENT ═══ */
+.content{flex:1;overflow-y:auto;padding:16px 18px;}
+.content::-webkit-scrollbar{width:5px;}
+.content::-webkit-scrollbar-thumb{background:#c8d4e8;border-radius:3px;}
+.view{display:none;}
+.view.active{display:block;}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:8px;border:none;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .14s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent2);}
+.btn-success{background:var(--green);color:#fff;}
+.btn-success:hover{background:var(--green2);}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-danger:hover{background:var(--red2);}
+.btn-warning{background:var(--orange);color:#fff;}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);background:#f0f7ff;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.btn-lg{padding:12px 22px;font-size:14px;font-weight:700;border-radius:10px;}
+.btn-green3{background:var(--green3);color:#1a3a00;font-weight:700;}
+.btn-green3:hover{background:#94c234;}
+.btn-round{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .14s;}
+
+/* ═══ STAT CARDS ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.scard-lbl{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.scard-val{font-size:22px;font-weight:700;}
+.scard-sub{font-size:10px;color:var(--text3);margin-top:3px;}
+.scard.blue .scard-val{color:var(--accent);}
+.scard.green .scard-val{color:var(--green);}
+.scard.red .scard-val{color:var(--red);}
+.scard.orange .scard-val{color:var(--orange);}
+
+/* ═══ LEGEND BAR ═══ */
+.legend-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
+.ldot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+/* ═══ COLLECTION TABLE ═══ */
+.coll-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.coll-head{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;gap:10px;flex-wrap:wrap;}
+.coll-head-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.coll-head-title i{color:#7dd3fc;}
+.coll-info{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.coll-info-item{text-align:center;}
+.coll-info-item .cv{font-size:18px;font-weight:700;color:#fff;}
+.coll-info-item .cl{font-size:9px;color:rgba(255,255,255,.45);text-transform:uppercase;}
+.coll-search{display:flex;align-items:center;gap:8px;}
+.coll-search input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:6px 10px;font-size:12px;font-family:'DM Sans',sans-serif;color:#fff;width:180px;outline:none;}
+.coll-search input::placeholder{color:rgba(255,255,255,.45);}
+.coll-search input:focus{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);}
+.coll-tbl-wrap{overflow-x:auto;}
+table.coll-tbl{width:100%;border-collapse:collapse;min-width:900px;}
+table.coll-tbl thead th{padding:9px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;background:#1e3a5a;color:rgba(255,255,255,.8);border-bottom:2px solid var(--border);text-align:center;white-space:nowrap;}
+table.coll-tbl thead th.left{text-align:left;}
+table.coll-tbl tbody td{padding:8px 8px;border-bottom:.5px solid rgba(0,0,0,.06);vertical-align:middle;font-size:12px;text-align:center;}
+table.coll-tbl tbody tr:last-child td{border-bottom:none;}
+table.coll-tbl tbody td.left{text-align:left;}
+/* row colors */
+.row-yellow{background:var(--row-yellow);}
+.row-yellow td{border-bottom-color:rgba(0,0,0,.05)!important;}
+.row-purple{background:var(--row-purple);}
+.row-green{background:var(--row-green);}
+.row-blue{background:var(--row-blue);}
+.row-red{background:#fdecea;}
+/* number cells */
+.num-cell{font-family:'DM Mono',monospace;font-weight:500;}
+.cpen-cell{background:#1565c0;color:#fff;border-radius:5px;padding:3px 7px;font-weight:700;display:inline-block;min-width:28px;}
+.ccan-cell{background:var(--green);color:#fff;border-radius:5px;padding:3px 7px;font-weight:700;display:inline-block;min-width:28px;}
+/* abono input */
+.abono-input{width:86px;background:#fff9c4;border:1.5px solid #f9a825;border-radius:6px;padding:5px 7px;font-size:12px;font-family:'DM Mono',monospace;font-weight:600;color:#5d4037;text-align:right;outline:none;}
+.abono-input:focus{border-color:#e65100;background:#fffde7;}
+/* click btn */
+.click-btn{background:linear-gradient(135deg,#e53935,#c62828);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:all .14s;white-space:nowrap;}
+.click-btn:hover{background:linear-gradient(135deg,#ef5350,#e53935);transform:scale(1.04);}
+.click-btn.applied{background:linear-gradient(135deg,var(--green),var(--green2));cursor:default;}
+.detalles-btn{background:linear-gradient(135deg,#1976d2,#1565c0);color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .14s;}
+.detalles-btn:hover{background:linear-gradient(135deg,#1e88e5,#1976d2);}
+.aplicado-badge{background:#e8f8ef;color:var(--green);border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;white-space:nowrap;}
+.mora-val{color:var(--red);font-weight:700;font-family:'DM Mono',monospace;}
+.mora-val.zero{color:var(--text3);font-weight:400;}
+.pago-badge{background:#e3f2fd;color:#1565c0;border-radius:5px;padding:2px 6px;font-size:10px;font-weight:600;}
+.status-pill{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700;}
+.sp-active{background:#e8f8ef;color:#1b5e20;}
+.sp-late{background:#fdecea;color:#b71c1c;}
+.sp-done{background:#f3e5f5;color:#4a148c;}
+.sp-new{background:#e3f2fd;color:#0d47a1;}
+.coll-footer{padding:10px 14px;background:var(--bg);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.coll-total-cobrado{font-size:13px;font-weight:700;color:var(--green);}
+.coll-footer-right{margin-left:auto;display:flex;gap:8px;}
+
+/* ═══ FORM: VENTAS / CLIENTE ═══ */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:13px;}
+.fcard-head{display:flex;align-items:center;gap:8px;padding:11px 16px;background:#1e3a5a;border-bottom:1px solid var(--border);}
+.fcard-head-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fcard-head i{font-size:16px;color:#7dd3fc;}
+.fcard-head-title{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;}
+.fcard-body{padding:15px 16px;}
+.fg{display:grid;gap:11px 14px;}
+.fg-3{grid-template-columns:repeat(3,1fr);}
+.fg-2{grid-template-columns:repeat(2,1fr);}
+.fg-4{grid-template-columns:repeat(4,1fr);}
+.f-full{grid-column:1/-1;}
+.f-2{grid-column:span 2;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:10.5px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:3px;text-transform:uppercase;letter-spacing:.3px;}
+.field label .req{color:var(--red);}
+.field input,.field select,.field textarea{
+  background:#fffde7;border:1.5px solid #f9a825;
+  border-radius:7px;padding:7px 10px;
+  font-size:12.5px;font-family:'DM Sans',sans-serif;
+  color:var(--text);outline:none;transition:border-color .14s,background .14s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:#f0f7ff;}
+.field input[readonly]{background:#f5f5f5;border-color:var(--border);color:var(--text2);cursor:default;}
+.field input.calc{background:#e8f8ef;border-color:#66bb6a;color:#1b5e20;font-weight:700;}
+.field input.calc-big{background:#e8f8ef;border-color:#66bb6a;color:#1b5e20;font-weight:700;font-size:16px;}
+.field textarea{resize:vertical;min-height:60px;}
+.field .prefix-wrap{position:relative;}
+.field .prefix-wrap .px{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;}
+.field .prefix-wrap input{padding-left:22px;}
+/* autocomplete */
+.ac-wrap{position:relative;}
+.ac-list{position:absolute;top:100%;left:0;right:0;z-index:500;background:var(--surface);border:1.5px solid var(--accent);border-top:none;border-radius:0 0 8px 8px;max-height:150px;overflow-y:auto;display:none;box-shadow:0 8px 20px rgba(0,0,0,.14);}
+.ac-list.open{display:block;}
+.ac-item{padding:8px 12px;cursor:pointer;font-size:12px;border-bottom:.5px solid var(--border);transition:background .1s;}
+.ac-item:hover,.ac-item.sel{background:#e8f4fd;color:var(--accent);}
+.ac-item:last-child{border-bottom:none;}
+/* form actions */
+.form-bar{background:var(--navy);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.form-bar .right{margin-left:auto;display:flex;gap:7px;}
+.nbtn{width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .14s;}
+.nbtn:hover{background:rgba(255,255,255,.22);color:#fff;}
+/* inline cuota calc hint */
+.calc-hint{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px;padding-top:12px;}
+
+/* ═══ TOTALIZAR ═══ */
+.tot-wrap{max-width:680px;}
+.tot-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.tot-table tr td{padding:11px 16px;border-bottom:.5px solid var(--border);font-size:13px;}
+.tot-table tr:last-child td{border-bottom:none;}
+.tot-label{font-weight:600;color:var(--navy);width:55%;}
+.tot-value{font-family:'DM Mono',monospace;font-weight:700;font-size:15px;text-align:right;color:var(--text);}
+.tot-value.yellow{background:#fffde7;color:#5d4037;}
+.tot-value.green{color:var(--green);}
+.tot-value.red{color:var(--red);}
+.tot-value.blue{color:var(--accent);}
+.tot-head-row td{background:var(--teal);color:#fff!important;font-weight:700!important;font-size:12px!important;text-transform:uppercase;letter-spacing:.4px;}
+.tot-section-row td{background:#f7f9fc;color:var(--text3)!important;font-size:11px!important;font-weight:600!important;text-transform:uppercase;letter-spacing:.5px;padding:7px 16px!important;}
+.tot-highlight{background:#e8f8ef;}
+.tot-highlight .tot-label{color:var(--green2);}
+.tot-highlight .tot-value{color:var(--green);}
+.tot-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.tot-side-btn{display:inline-flex;align-items:center;gap:5px;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .14s;}
+.tot-side-btn:hover{background:var(--teal);}
+.value-input-wrap{position:relative;display:inline-block;width:100%;}
+.value-input-wrap input{width:100%;background:#fffde7;border:1.5px solid #f9a825;border-radius:6px;padding:6px 10px;font-size:14px;font-weight:700;font-family:'DM Mono',monospace;color:#5d4037;text-align:right;outline:none;}
+.value-input-wrap input:focus{border-color:var(--accent);}
+
+/* ═══ GASTOS ═══ */
+.gasto-wrap{max-width:640px;}
+.gasto-title{font-size:14px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:7px;}
+.gasto-title i{color:var(--orange);font-size:20px;}
+.gastos-list{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-top:16px;overflow:hidden;}
+.gastos-list-head{padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between;}
+.gasto-row{display:flex;align-items:center;padding:10px 14px;border-bottom:.5px solid var(--border);gap:10px;}
+.gasto-row:last-child{border-bottom:none;}
+.gasto-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.gasto-nombre{flex:1;font-size:12px;font-weight:500;}
+.gasto-concepto{font-size:11px;color:var(--text3);}
+.gasto-valor{font-family:'DM Mono',monospace;font-weight:700;color:var(--red);font-size:13px;}
+.gasto-del{background:none;border:none;color:var(--text3);cursor:pointer;padding:3px;border-radius:5px;transition:all .14s;}
+.gasto-del:hover{color:var(--red);background:#fdecea;}
+.gastos-total-row{padding:10px 14px;background:#fdecea;display:flex;justify-content:space-between;font-weight:700;font-size:13px;}
+.gastos-total-row .gt-label{color:var(--red2);}
+.gastos-total-row .gt-value{font-family:'DM Mono',monospace;color:var(--red);}
+
+/* ═══ MOROSOS ═══ */
+.morosos-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+
+/* ═══ DETALLE MODAL ═══ */
+.overlay{position:fixed;inset:0;background:rgba(11,31,58,.6);z-index:800;display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:14px;width:540px;max-width:93vw;max-height:88vh;overflow-y:auto;animation:sU .2s ease;}
+@keyframes sU{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-head{background:#1e3a5a;padding:16px 20px;display:flex;align-items:center;gap:10px;}
+.modal-head-title{color:#fff;font-size:14px;font-weight:700;flex:1;}
+.modal-head i{color:#7dd3fc;font-size:20px;}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:20px;padding:2px;border-radius:5px;}
+.modal-close:hover{color:#fff;}
+.modal-body{padding:18px 20px;}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid var(--border);}
+.detail-row:last-child{border-bottom:none;}
+.detail-lbl{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.3px;}
+.detail-val{font-size:13px;font-weight:600;color:var(--text);}
+.detail-val.money{font-family:'DM Mono',monospace;color:var(--navy);}
+.detail-val.red{color:var(--red);}
+.detail-val.green{color:var(--green);}
+.detail-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--teal);padding:10px 0 4px;margin-top:6px;}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--navy);color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:8px;transform:translateY(50px);opacity:0;transition:all .22s;pointer-events:none;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast i{font-size:17px;}
+.toast.success{background:var(--green);}
+.toast.error{background:var(--red);}
+.toast.warn{background:var(--orange);}
+
+/* ═══ EMPTY STATE ═══ */
+.empty{text-align:center;padding:48px 20px;}
+.empty i{font-size:48px;opacity:.25;display:block;margin:0 auto 10px;}
+.empty p{color:var(--text3);font-size:14px;}
+
+/* ═══ CONFIRM MODAL ═══ */
+.confirm-modal{background:var(--surface);border-radius:12px;width:380px;max-width:90vw;padding:22px;}
+.confirm-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.confirm-title i{font-size:20px;color:var(--orange);}
+.confirm-msg{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;}
+.confirm-footer{display:flex;justify-content:flex-end;gap:8px;}
+
+/* ═══ PROGRESS ═══ */
+.prog{height:4px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:4px;}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s;}
+.pf-green{background:var(--green);}
+.pf-orange{background:var(--orange);}
+.pf-red{background:var(--red);}
+
+/* ═══ HISTORIAL ═══ */
+.hist-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid var(--border);}
+.hist-row:last-child{border-bottom:none;}
+.hist-date{font-size:11px;color:var(--text3);}
+.hist-amount{font-family:'DM Mono',monospace;font-weight:600;color:var(--green);}
+
+/* placeholder views */
+.placeholder-view{text-align:center;padding:60px 20px;}
+.placeholder-view i{font-size:56px;opacity:.18;display:block;margin:0 auto 12px;color:var(--teal);}
+.placeholder-view h3{font-size:17px;font-weight:700;color:var(--text2);margin-bottom:6px;}
+.placeholder-view p{color:var(--text3);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon"><i class="ti ti-coins"></i></div>
+    <div>
+      <div class="sb-logo-name">PrestaApp</div>
+      <div class="sb-logo-ver">v2.1 — Sistema de Préstamos</div>
+    </div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar">JM</div>
+    <div>
+      <div class="sb-uname">Juan Martínez</div>
+      <div class="sb-urole">Cobrador principal</div>
+      <span class="sb-ruta">Ruta: YULIANPLAYA</span>
+    </div>
+  </div>
+  <div class="menu">
+    <div class="menu-sec">Principal</div>
+    <div class="mi active" data-view="listado"><i class="ti ti-layout-list"></i> Listado General</div>
+    <div class="mi" data-view="nuevo-cliente"><i class="ti ti-user-plus"></i> Clientes Nuevos</div>
+    <div class="mi" data-view="ventas"><i class="ti ti-credit-card"></i> Ventas Nuevas</div>
+    <div class="mi" data-view="gastos"><i class="ti ti-currency-dollar"></i> Gastos del día</div>
+    <div class="mi" data-view="totalizar"><i class="ti ti-math-function"></i> Totalizar Ventas</div>
+    <div class="mdiv"></div>
+    <div class="menu-sec">Gestión</div>
+    <div class="mi" data-view="rutas"><i class="ti ti-world"></i> Enruta Clientes</div>
+    <div class="mi" data-view="prioridad"><i class="ti ti-stack-2"></i> Por prioridad</div>
+    <div class="mi" data-view="activar"><i class="ti ti-map-pin-share"></i> Activar Clientes</div>
+    <div class="mi" data-view="morosos"><i class="ti ti-map-pin-exclamation"></i> Clientes Morosos <span class="bc" id="badge-morosos">0</span></div>
+    <div class="mdiv"></div>
+    <div class="menu-sec">Datos</div>
+    <div class="mi" data-view="consultas"><i class="ti ti-search"></i> Consultas Datos</div>
+    <div class="mi" data-view="actualizar"><i class="ti ti-zoom-replace"></i> Actualizar Datos</div>
+    <div class="mdiv"></div>
+    <div class="mi" data-view="clave"><i class="ti ti-key"></i> Cambiar Clave</div>
+    <div class="mi" data-view="opciones"><i class="ti ti-settings"></i> Otras opciones</div>
+    <div class="mi danger" id="salir-btn"><i class="ti ti-power"></i> Salir del Sistema</div>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-bottom-date" id="sb-date"></div>
+  </div>
+</nav>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="tb-title"><i class="ti ti-layout-list"></i> LISTADO GENERAL</div>
+    <div class="tb-sep"></div>
+    <div class="tb-search">
+      <i class="ti ti-search"></i>
+      <input type="text" id="global-search" placeholder="Buscar cliente, cédula…" autocomplete="off">
+    </div>
+    <div class="tb-btn" onclick="refreshData()" title="Actualizar"><i class="ti ti-refresh"></i></div>
+    <span class="tb-chip green" id="tb-ruta">Ruta: YULIANPLAYA</span>
+    <span class="tb-chip" id="tb-date"></span>
+  </div>
+
+  <div class="content" id="content">
+
+    <!-- ══════ VIEW: LISTADO GENERAL ══════ -->
+    <div class="view active" id="view-listado">
+      <div class="stats-row" id="stats-row"></div>
+
+      <!-- Color legend -->
+      <div class="legend-bar">
+        <span style="font-size:11px;font-weight:700;color:var(--text2);margin-right:4px;">Leyenda:</span>
+        <div class="legend-item"><div class="ldot" style="background:#ef5350"></div>CLAVOS (marcados)</div>
+        <div class="legend-item"><div class="ldot" style="background:#f9a825"></div>Vencidos</div>
+        <div class="legend-item"><div class="ldot" style="background:#2e7d32"></div>Dos fechas sin pagar</div>
+        <div class="legend-item"><div class="ldot" style="background:#7b1fa2"></div>Próximos a renovar</div>
+        <div class="legend-item"><div class="ldot" style="background:#1565c0"></div>Quincenales</div>
+        <div class="legend-item"><div class="ldot" style="background:#795548"></div>Mensuales</div>
+      </div>
+
+      <div class="coll-card">
+        <div class="coll-head">
+          <div class="coll-head-title"><i class="ti ti-users"></i> Créditos a Liquidar</div>
+          <div class="coll-info">
+            <div class="coll-info-item"><div class="cv" id="ci-cobrado">$ 0</div><div class="cl">Cobrado hoy</div></div>
+            <div class="coll-info-item"><div class="cv" id="ci-total">0</div><div class="cl">Total créditos</div></div>
+            <div class="coll-info-item"><div class="cv" id="ci-pendientes">0</div><div class="cl">Pendientes</div></div>
+          </div>
+          <div class="coll-search">
+            <i class="ti ti-search" style="color:rgba(255,255,255,.5);font-size:15px;position:relative;left:0"></i>
+            <input type="text" id="coll-search" placeholder="Buscar nombre del cliente…" autocomplete="off">
+            <button class="btn btn-success btn-sm" onclick="showView('nuevo-cliente');resetForm()"><i class="ti ti-plus"></i> Nuevo</button>
+          </div>
+        </div>
+        <div class="coll-tbl-wrap">
+          <table class="coll-tbl">
+            <thead>
+              <tr>
+                <th>CPen</th>
+                <th>CCan</th>
+                <th>Saldo</th>
+                <th class="left">Cliente</th>
+                <th>Cuota</th>
+                <th>Abono</th>
+                <th></th>
+                <th>Aplicado</th>
+                <th>Estado</th>
+                <th>Pago</th>
+                <th>Mora</th>
+                <th>Historial</th>
+              </tr>
+            </thead>
+            <tbody id="coll-tbody"></tbody>
+          </table>
+        </div>
+        <div class="coll-footer">
+          <span class="coll-total-cobrado" id="footer-cobrado"><i class="ti ti-circle-check" style="vertical-align:-2px;margin-right:4px"></i>Total cobrado hoy: <strong>$ 0</strong></span>
+          <div class="coll-footer-right">
+            <button class="btn btn-outline btn-sm" onclick="showView('listado')"><i class="ti ti-refresh"></i> Actualizar</button>
+            <button class="btn btn-primary btn-sm" onclick="showView('totalizar')"><i class="ti ti-calculator"></i> Totalizar cobros</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ VIEW: NUEVO CLIENTE ══════ -->
+    <div class="view" id="view-nuevo-cliente">
+      <div id="nc-detail-header"></div>
+
+      <div class="form-card">
+        <div class="fcard-head"><div class="fcard-head-num">1</div><i class="ti ti-id-badge-2"></i><span class="fcard-head-title">Identificación y Contacto</span></div>
+        <div class="fcard-body">
+          <div class="fg fg-3">
+            <div class="field">
+              <label>Cédula del cliente <span class="req">*</span></label>
+              <div class="ac-wrap">
+                <input type="text" id="f-cedula" placeholder="Ej: 5,462,349" autocomplete="off" maxlength="12">
+                <div class="ac-list" id="ac-cedula"></div>
+              </div>
+            </div>
+            <div class="field f-2">
+              <label>Nombre completo <span class="req">*</span></label>
+              <div class="ac-wrap">
+                <input type="text" id="f-nombre" placeholder="APELLIDO NOMBRE" autocomplete="off">
+                <div class="ac-list" id="ac-nombre"></div>
+              </div>
+            </div>
+            <div class="field f-2">
+              <label>Dirección de cobro actual <span class="req">*</span></label>
+              <input type="text" id="f-direccion" placeholder="Calle, Barrio, referencia">
+            </div>
+            <div class="field">
+              <label>Tel. Celular actual <span class="req">*</span></label>
+              <input type="tel" id="f-telefono" placeholder="300 000 0000">
+            </div>
+            <div class="field">
+              <label>Correo electrónico</label>
+              <input type="email" id="f-email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="field">
+              <label>Ruta del cliente <span class="req">*</span></label>
+              <div class="ac-wrap">
+                <input type="text" id="f-ruta" placeholder="YULIANPLAYA" autocomplete="off">
+                <div class="ac-list" id="ac-ruta"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Prioridad actual</label>
+              <input type="text" id="f-prioridad-actual" readonly placeholder="Auto">
+            </div>
+            <div class="field">
+              <label>Nueva prioridad</label>
+              <input type="number" id="f-prioridad" placeholder="1 - 200" min="1" max="999">
+            </div>
+            <div class="field f-full">
+              <label>Contacto referencia / Garante</label>
+              <input type="text" id="f-garante" placeholder="Nombre completo (relación) — teléfono">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="fcard-head"><div class="fcard-head-num">2</div><i class="ti ti-file-invoice"></i><span class="fcard-head-title">Detalles del Préstamo</span></div>
+        <div class="fcard-body">
+          <div class="fg fg-3">
+            <div class="field">
+              <label>Crédito No.</label>
+              <input type="text" id="f-credito" placeholder="Auto-generado" readonly>
+            </div>
+            <div class="field">
+              <label>Fecha inicial <span class="req">*</span></label>
+              <input type="date" id="f-fecha-ini">
+            </div>
+            <div class="field">
+              <label>Fecha final</label>
+              <input type="date" id="f-fecha-fin">
+            </div>
+            <div class="field">
+              <label>Valor capital <span class="req">*</span></label>
+              <div class="prefix-wrap">
+                <span class="px">$</span>
+                <input type="text" id="f-capital" placeholder="0" oninput="calcAuto()">
+              </div>
+            </div>
+            <div class="field">
+              <label>Valor cuota fija <span class="req">*</span></label>
+              <div class="prefix-wrap">
+                <span class="px">$</span>
+                <input type="text" id="f-cuota" placeholder="0" oninput="calcAuto()">
+              </div>
+            </div>
+            <div class="field">
+              <label>Cuotas pactadas</label>
+              <input type="number" id="f-cuotas-pactadas" placeholder="0" oninput="calcAuto()">
+            </div>
+            <div class="field">
+              <label>Fecha 1ra cuota a pagar</label>
+              <input type="date" id="f-fecha-cuota">
+            </div>
+            <div class="field">
+              <label>Forma de pago</label>
+              <select id="f-forma-pago">
+                <option value="">— Seleccione —</option>
+                <option value="DIARIA">Diaria</option>
+                <option value="SEMANAL">Semanal</option>
+                <option value="QUINCENAL">Quincenal</option>
+                <option value="MENSUAL">Mensual</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Estado del crédito</label>
+              <select id="f-estado">
+                <option value="Activo">Activo</option>
+                <option value="Atrasado">Atrasado</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="Nuevo">Nuevo</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+            <button class="btn btn-warning" onclick="generarCuota()" style="font-size:13px;padding:9px 18px;font-weight:700;">
+              <i class="ti ti-receipt"></i> *** GENERAR CUOTA ***
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="fcard-head"><div class="fcard-head-num">3</div><i class="ti ti-calculator"></i><span class="fcard-head-title">Saldos y Contabilidad</span></div>
+        <div class="fcard-body">
+          <div class="fg fg-3">
+            <div class="field">
+              <label>Saldo capital préstamo</label>
+              <div class="prefix-wrap"><span class="px">$</span><input type="text" id="f-saldo-capital" placeholder="0" oninput="calcTotal()"></div>
+            </div>
+            <div class="field">
+              <label>Saldo utilidad préstamo</label>
+              <div class="prefix-wrap"><span class="px">$</span><input type="text" id="f-saldo-utilidad" placeholder="0" oninput="calcTotal()"></div>
+            </div>
+            <div class="field">
+              <label>Saldo préstamo + utilidad</label>
+              <div class="prefix-wrap"><span class="px" style="color:var(--green2);font-weight:700">$</span><input type="text" id="f-saldo-total" class="calc" readonly placeholder="Auto-calculado"></div>
+            </div>
+            <div class="field">
+              <label>Plazo del préstamo (días)</label>
+              <input type="text" id="f-plazo" placeholder="0 días" readonly>
+            </div>
+            <div class="field">
+              <label>Tasa de interés %</label>
+              <input type="text" id="f-tasa" placeholder="0.0000 %" readonly>
+            </div>
+            <div class="field">
+              <label></label>
+              <div style="display:flex;gap:16px;padding-top:14px;">
+                <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--orange)" id="disp-pend">0</div><div style="font-size:10px;color:var(--text3)">C. Pendientes</div></div>
+                <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--green)" id="disp-canc">0</div><div style="font-size:10px;color:var(--text3)">C. Canceladas</div></div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Cuotas pendientes</label>
+              <input type="number" id="f-cuotas-pend" placeholder="0" oninput="updateDisp()">
+            </div>
+            <div class="field">
+              <label>Cuotas canceladas</label>
+              <input type="number" id="f-cuotas-canc" placeholder="0" oninput="updateDisp()">
+            </div>
+            <div class="field">
+              <label>Total deuda</label>
+              <div class="prefix-wrap"><span class="px" style="color:var(--green2);font-weight:700">$</span><input type="text" id="f-total-deuda" class="calc-big" readonly placeholder="$ 0"></div>
+            </div>
+            <div class="field f-full">
+              <label>Notas del cobrador</label>
+              <textarea id="f-notas" placeholder="Observaciones, acuerdos especiales, incidencias…"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-bar">
+          <button class="btn btn-success" onclick="saveClient()"><i class="ti ti-device-floppy"></i> Guardar Cambios</button>
+          <button class="btn btn-primary" onclick="generarCuota()"><i class="ti ti-receipt"></i> Generar Cuota</button>
+          <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.2)" onclick="clearForm()"><i class="ti ti-eraser"></i> Limpiar</button>
+          <div class="right">
+            <button class="nbtn" onclick="showView('listado')" title="Atrás"><i class="ti ti-arrow-left"></i></button>
+            <button class="nbtn" onclick="showView('listado')" title="Inicio"><i class="ti ti-home"></i></button>
+            <button class="nbtn" style="background:rgba(231,76,60,.25);color:#ff8070" onclick="showView('listado')" title="Salir"><i class="ti ti-x"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ VIEW: VENTAS NUEVAS (Renovación) ══════ -->
+    <div class="view" id="view-ventas">
+      <div class="form-card">
+        <div class="fcard-head"><div class="fcard-head-num"><i class="ti ti-refresh" style="font-size:14px;color:#fff"></i></div><i class="ti ti-credit-card"></i><span class="fcard-head-title">Venta Nueva / Renovación de Crédito</span></div>
+        <div class="fcard-body">
+          <p style="font-size:12px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:6px;"><i class="ti ti-info-circle" style="font-size:15px;color:var(--accent)"></i>Busca el cliente por cédula o nombre para renovar su crédito automáticamente.</p>
+          <div class="fg fg-2">
+            <div class="field">
+              <label>Cédula del cliente <span class="req">*</span></label>
+              <div class="ac-wrap">
+                <input type="text" id="vf-cedula" placeholder="Buscar por cédula…" autocomplete="off">
+                <div class="ac-list" id="vac-cedula"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Nombre del cliente</label>
+              <div class="ac-wrap">
+                <input type="text" id="vf-nombre" placeholder="Buscar por nombre…" autocomplete="off">
+                <div class="ac-list" id="vac-nombre"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Client info (auto-filled) -->
+          <div id="venta-client-info" style="display:none;margin-top:14px;padding:12px;background:#e8f4fd;border-radius:9px;border:1px solid #90caf9;">
+            <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;">Datos del cliente encontrado</div>
+            <div class="fg fg-3">
+              <div class="field"><label>Ruta</label><input type="text" id="vf-ruta" readonly></div>
+              <div class="field"><label>Dirección cobro</label><input type="text" id="vf-dir" readonly></div>
+              <div class="field"><label>Teléfono</label><input type="text" id="vf-tel" readonly></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card" id="venta-form" style="display:none">
+        <div class="fcard-head"><div class="fcard-head-num">2</div><i class="ti ti-file-invoice"></i><span class="fcard-head-title">Nuevo Crédito</span></div>
+        <div class="fcard-body">
+          <div class="fg fg-3">
+            <div class="field">
+              <label>Crédito No. nuevo</label>
+              <input type="text" id="vf-credito" readonly placeholder="Auto-generado">
+            </div>
+            <div class="field">
+              <label>Fecha inicial <span class="req">*</span></label>
+              <input type="date" id="vf-fecha-ini">
+            </div>
+            <div class="field">
+              <label>Fecha final</label>
+              <input type="date" id="vf-fecha-fin">
+            </div>
+            <div class="field">
+              <label>Valor capital <span class="req">*</span></label>
+              <div class="prefix-wrap"><span class="px">$</span><input type="text" id="vf-capital" placeholder="0" oninput="calcVenta()"></div>
+            </div>
+            <div class="field">
+              <label>Valor cuota fija <span class="req">*</span></label>
+              <div class="prefix-wrap"><span class="px">$</span><input type="text" id="vf-cuota" placeholder="0" oninput="calcVenta()"></div>
+            </div>
+            <div class="field">
+              <label>Cuotas pactadas</label>
+              <input type="number" id="vf-cuotas" placeholder="0" oninput="calcVenta()">
+            </div>
+            <div class="field">
+              <label>Fecha 1ra cuota</label>
+              <input type="date" id="vf-fecha-cuota">
+            </div>
+            <div class="field">
+              <label>Forma de pago</label>
+              <select id="vf-forma">
+                <option value="">— Seleccione —</option>
+                <option value="DIARIA">Diaria</option>
+                <option value="SEMANAL">Semanal</option>
+                <option value="QUINCENAL">Quincenal</option>
+                <option value="MENSUAL">Mensual</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Tasa de interés % <span style="color:var(--text3)">(calculada)</span></label>
+              <input type="text" id="vf-tasa" placeholder="0.0000 %" readonly class="calc">
+            </div>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+            <button class="btn btn-warning" onclick="calcVenta()" style="font-size:13px;padding:9px 18px;font-weight:700;"><i class="ti ti-receipt"></i> *** GENERAR CUOTA ***</button>
+          </div>
+          <!-- Saldos calculados -->
+          <div id="venta-saldos" style="display:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+            <div class="fg fg-3">
+              <div class="field"><label>Saldo capital</label><div class="prefix-wrap"><span class="px">$</span><input type="text" id="vf-saldo-cap" class="calc" readonly></div></div>
+              <div class="field"><label>Saldo utilidad</label><div class="prefix-wrap"><span class="px">$</span><input type="text" id="vf-saldo-util" class="calc" readonly></div></div>
+              <div class="field"><label>Total préstamo + utilidad</label><div class="prefix-wrap"><span class="px" style="color:var(--green2);font-weight:700">$</span><input type="text" id="vf-total" class="calc-big" readonly></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-bar">
+          <button class="btn btn-success" onclick="saveVenta()"><i class="ti ti-device-floppy"></i> Guardar Venta Nueva</button>
+          <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.2)" onclick="clearVenta()"><i class="ti ti-eraser"></i> Limpiar</button>
+          <div class="right">
+            <button class="nbtn" onclick="showView('listado')"><i class="ti ti-arrow-left"></i></button>
+            <button class="nbtn" onclick="showView('listado')"><i class="ti ti-home"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ VIEW: GASTOS DEL DÍA ══════ -->
+    <div class="view" id="view-gastos">
+      <div class="gasto-wrap">
+        <div class="gasto-title">
+          <i class="ti ti-gas-station"></i>
+          GASTOS DEL COBRO — RUTA <span id="gastos-ruta-title" style="color:var(--teal);margin-left:4px">YULIANPLAYA</span>
+        </div>
+        <div class="form-card">
+          <div class="fcard-head"><div class="fcard-head-num"><i class="ti ti-plus" style="font-size:14px;color:#fff"></i></div><i class="ti ti-receipt"></i><span class="fcard-head-title">Registrar Gasto</span></div>
+          <div class="fcard-body">
+            <div class="fg fg-3">
+              <div class="field">
+                <label>Fecha del gasto</label>
+                <input type="date" id="g-fecha">
+              </div>
+              <div class="field">
+                <label>Ruta del gasto</label>
+                <input type="text" id="g-ruta" value="YULIANPLAYA" readonly>
+              </div>
+              <div class="field">
+                <label>Valor del gasto <span class="req">*</span></label>
+                <div class="prefix-wrap"><span class="px">$</span><input type="text" id="g-valor" placeholder="0"></div>
+              </div>
+              <div class="field">
+                <label>Nombre del gasto <span class="req">*</span></label>
+                <select id="g-nombre">
+                  <option value="">— Seleccione —</option>
+                  <option value="Gasolina">Gasolina / Combustible</option>
+                  <option value="Peaje">Peaje</option>
+                  <option value="Alimentación">Alimentación / Comida</option>
+                  <option value="Parqueadero">Parqueadero</option>
+                  <option value="Transporte">Transporte / Taxi</option>
+                  <option value="Comunicaciones">Comunicaciones / Recarga</option>
+                  <option value="Papelería">Papelería / Impresión</option>
+                  <option value="Mantenimiento">Mantenimiento vehículo</option>
+                  <option value="Otro">Otro gasto</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Tipo del gasto</label>
+                <input type="text" id="g-tipo" value="OPERACIONAL" readonly>
+              </div>
+              <div class="field f-full">
+                <label>Concepto del gasto <span class="req">*</span></label>
+                <textarea id="g-concepto" placeholder="Describe detalladamente el gasto realizado…"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="form-bar">
+            <button class="btn-green3 btn btn-lg" onclick="grabarGasto()"><i class="ti ti-device-floppy"></i> GRABAR GASTO</button>
+            <div class="right">
+              <button class="nbtn" onclick="showView('listado')" title="Atrás"><i class="ti ti-arrow-left"></i></button>
+              <button class="nbtn" style="background:rgba(231,76,60,.25);color:#ff8070" onclick="showView('listado')" title="Salir"><i class="ti ti-x"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de gastos del día -->
+        <div class="gastos-list" id="gastos-list">
+          <div class="gastos-list-head">
+            <span><i class="ti ti-list" style="vertical-align:-2px;margin-right:4px"></i>Gastos registrados hoy</span>
+            <span id="gastos-count">0 gastos</span>
+          </div>
+          <div id="gastos-items">
+            <div style="text-align:center;padding:24px;color:var(--text3);font-size:12px;"><i class="ti ti-inbox" style="font-size:28px;display:block;margin:0 auto 8px;opacity:.3"></i>Sin gastos registrados hoy</div>
+          </div>
+          <div class="gastos-total-row" id="gastos-total-row">
+            <span class="gt-label">Total gastos del día</span>
+            <span class="gt-value" id="gastos-total">$ 0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ VIEW: TOTALIZAR VENTAS ══════ -->
+    <div class="view" id="view-totalizar">
+      <div class="tot-wrap">
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:7px;">
+          <i class="ti ti-calculator" style="color:var(--teal);font-size:20px"></i>
+          Liquidación Diaria — Totalizar Cobros
+        </div>
+        <table class="tot-table">
+          <tr class="tot-head-row"><td class="tot-label">Campo</td><td class="tot-value" style="color:#7dd3fc!important;font-size:11px!important;text-align:right">Valor</td></tr>
+          <tr><td class="tot-label" style="font-size:12px;color:var(--text3)">Fecha de Liquidación:</td><td class="tot-value blue" id="tot-fecha"></td></tr>
+          <tr style="background:#fff8e1"><td class="tot-label" style="font-weight:700;font-size:14px">META de RECAUDO para HOY:</td><td class="tot-value" style="font-size:18px;color:var(--orange)" id="tot-meta">$ 0</td></tr>
+          <tr><td class="tot-label" style="font-size:12px;color:var(--text3)">Ruta a liquidar:</td><td class="tot-value" id="tot-ruta" style="color:var(--teal);text-align:right;font-size:13px">YULIANPLAYA</td></tr>
+
+          <tr class="tot-section-row"><td colspan="2">Entradas</td></tr>
+          <tr><td class="tot-label">Valor Base Entregado:</td><td class="tot-value blue" id="tot-base">$ 0</td></tr>
+          <tr><td class="tot-label">Valor Total Cobrado:</td><td class="tot-value green" id="tot-cobrado">$ 0</td></tr>
+
+          <tr class="tot-section-row"><td colspan="2">Salidas</td></tr>
+          <tr>
+            <td class="tot-label" style="display:flex;align-items:center;gap:8px">
+              Valor Total Gastos:
+              <button class="tot-side-btn" onclick="showView('gastos')"><i class="ti ti-eye"></i> VER GASTOS</button>
+            </td>
+            <td class="tot-value red" id="tot-gastos">$ 0</td>
+          </tr>
+          <tr>
+            <td class="tot-label" style="display:flex;align-items:center;gap:8px">
+              Valor Créditos Nuevos:
+              <button class="tot-side-btn" onclick="showView('ventas')"><i class="ti ti-eye"></i> VER NUEVOS</button>
+            </td>
+            <td class="tot-value red" id="tot-nuevos">$ 0</td>
+          </tr>
+
+          <tr class="tot-section-row"><td colspan="2">Resultado</td></tr>
+          <tr class="tot-highlight">
+            <td class="tot-label" style="font-size:15px;font-weight:700">VR. REAL A ENTREGAR:</td>
+            <td class="tot-value" style="font-size:20px" id="tot-real">$ 0</td>
+          </tr>
+          <tr><td class="tot-label">Valor Faltante Generado:</td><td class="tot-value red" id="tot-faltante">$ 0</td></tr>
+          <tr><td class="tot-label">Valor Sobrante Generado:</td><td class="tot-value green" id="tot-sobrante">$ 0</td></tr>
+          <tr style="background:#fffde7">
+            <td class="tot-label" style="font-weight:700">Valor Entrega Efectivo:</td>
+            <td class="tot-value">
+              <div class="value-input-wrap"><input type="text" id="tot-efectivo" placeholder="$ 0" oninput="calcTotales()"></div>
+            </td>
+          </tr>
+        </table>
+
+        <div class="tot-actions">
+          <button class="btn-green3 btn btn-lg" onclick="totalizarCobro()"><i class="ti ti-circle-check"></i> TOTALIZAR COBROS</button>
+          <button class="btn btn-primary btn-lg" onclick="showToast('Generando recibo de cierre…','')"><i class="ti ti-printer"></i> Imprimir Recibo</button>
+          <div class="right" style="margin-left:auto;">
+            <button class="btn btn-outline" onclick="showView('listado')"><i class="ti ti-arrow-left"></i> Volver</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ VIEW: MOROSOS ══════ -->
+    <div class="view" id="view-morosos"></div>
+
+    <!-- ══════ VIEWS PLACEHOLDER ══════ -->
+    <div class="view" id="view-rutas"></div>
+    <div class="view" id="view-prioridad"></div>
+    <div class="view" id="view-activar"></div>
+    <div class="view" id="view-consultas"></div>
+    <div class="view" id="view-actualizar"></div>
+    <div class="view" id="view-clave"></div>
+    <div class="view" id="view-opciones"></div>
+  </div>
+</div>
+
+<!-- MODAL: Detalles del cliente -->
+<div class="overlay" id="overlay-detalle">
+  <div class="modal">
+    <div class="modal-head">
+      <i class="ti ti-user"></i>
+      <span class="modal-head-title" id="modal-nombre-title">Detalles del cliente</span>
+      <button class="modal-close" onclick="closeModal('overlay-detalle')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="modal-detalle-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('overlay-detalle')">Cerrar</button>
+      <button class="btn btn-primary" id="modal-edit-btn">Editar cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirmar -->
+<div class="overlay" id="overlay-confirm">
+  <div class="confirm-modal">
+    <div class="confirm-title"><i class="ti ti-alert-triangle"></i><span id="confirm-title-text">Confirmar</span></div>
+    <div class="confirm-msg" id="confirm-msg">¿Confirmar esta acción?</div>
+    <div class="confirm-footer">
+      <button class="btn btn-outline" onclick="closeModal('overlay-confirm')">Cancelar</button>
+      <button class="btn btn-primary" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="ti ti-check" id="toast-icon"></i><span id="toast-msg"></span></div>
+
+</div>
+</body>
+<script>
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+const RUTA_DEFAULT='YULIANPLAYA';
+const COBRADOR='Juan Martínez';
+let nextId=10;
+let nextCredito=337920;
+
+const COLORS=[
+  ['#bbdefb','#0d47a1'],['#c8e6c9','#1b5e20'],['#f8bbd0','#880e4f'],
+  ['#fff9c4','#f57f17'],['#e1bee7','#4a148c'],['#b2dfdb','#004d40'],
+  ['#ffe0b2','#e65100'],['#cfd8dc','#263238']
+];
+
+function rndColor(name){
+  let h=0;for(let c of name)h=c.charCodeAt(0)+((h<<5)-h);
+  return COLORS[Math.abs(h)%COLORS.length];
+}
+function initials(n){const p=n.trim().split(' ');return(p[0]?p[0][0]:'')+(p[1]?p[1][0]:'');}
+function fmt(n){return isNaN(n)?'0':Number(Math.round(n)).toLocaleString('es-CO');}
+function unf(s){return parseFloat(String(s||0).replace(/[^0-9.]/g,''))||0;}
+function today(){return new Date().toISOString().split('T')[0];}
+function todayFmt(){return new Date().toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+function todayShort(){return new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});}
+
+let clients=[
+  {id:1,cedula:'5,462,349',nombre:'JORGE ALBERTO MEDINA',direccion:'Cra 12 #5-40, Barrio Centro',telefono:'311 852 4417',email:'',ruta:'YULIANPLAYA',prioridad:1,garante:'',creditoNo:'337911',fechaIni:'2026-04-01',fechaFin:'2026-07-01',capital:2100000,cuota:420,cuotasPactadas:20,fechaCuota:'2026-04-02',formaPago:'DIARIA',estado:'Atrasado',saldoCapital:2070,saldoUtilidad:0,cuotasPend:5,cuotasCanc:15,notas:'',colorType:'yellow',abonado:0,historial:[]},
+  {id:2,cedula:'7,890,123',nombre:'LETICIA EMPANADAS',direccion:'Calle 15 #8-20',telefono:'300 111 2233',email:'',ruta:'YULIANPLAYA',prioridad:2,garante:'',creditoNo:'337912',fechaIni:'2026-03-15',fechaFin:'2026-07-15',capital:8640,cuota:720,cuotasPactadas:20,fechaCuota:'2026-03-16',formaPago:'DIARIA',estado:'Activo',saldoCapital:8640,saldoUtilidad:0,cuotasPend:12,cuotasCanc:8,notas:'',colorType:'yellow',abonado:0,historial:[]},
+  {id:3,cedula:'4,456,789',nombre:'MARIA DEL CARMEN DAMA',direccion:'Av 30 #15-20',telefono:'318 900 1234',email:'',ruta:'YULIANPLAYA',prioridad:3,garante:'',creditoNo:'337913',fechaIni:'2026-05-01',fechaFin:'2026-07-01',capital:3600,cuota:180,cuotasPactadas:20,fechaCuota:'2026-05-02',formaPago:'DIARIA',estado:'Activo',saldoCapital:3600,saldoUtilidad:0,cuotasPend:20,cuotasCanc:0,notas:'',colorType:'purple',abonado:0,historial:[]},
+  {id:4,cedula:'9,876,543',nombre:'ALEJANDRO ASADERO SANDRA',direccion:'Transversal 5 #30-11',telefono:'322 555 8899',email:'',ruta:'YULIANPLAYA',prioridad:4,garante:'',creditoNo:'337914',fechaIni:'2026-04-10',fechaFin:'2026-06-10',capital:2280,cuota:120,cuotasPactadas:20,fechaCuota:'2026-04-11',formaPago:'DIARIA',estado:'Activo',saldoCapital:2280,saldoUtilidad:0,cuotasPend:19,cuotasCanc:1,notas:'',colorType:'yellow',abonado:0,historial:[]},
+  {id:5,cedula:'3,344,556',nombre:'AMAYA AGUIRRE 5 PARQUE',direccion:'Barrio El Parque #5',telefono:'310 244 5566',email:'',ruta:'YULIANPLAYA',prioridad:5,garante:'',creditoNo:'337915',fechaIni:'2026-04-05',fechaFin:'2026-06-05',capital:1440,cuota:240,cuotasPactadas:20,fechaCuota:'2026-04-06',formaPago:'DIARIA',estado:'Activo',saldoCapital:1440,saldoUtilidad:0,cuotasPend:6,cuotasCanc:14,notas:'',colorType:'yellow',abonado:0,historial:[]},
+  {id:6,cedula:'1,234,567',nombre:'ALEJANDRO YEPEZ',direccion:'Calle 8 #3-15',telefono:'321 777 8800',email:'',ruta:'YULIANPLAYA',prioridad:6,garante:'',creditoNo:'337916',fechaIni:'2026-04-20',fechaFin:'2026-07-20',capital:1400,cuota:150,cuotasPactadas:20,fechaCuota:'2026-04-21',formaPago:'DIARIA',estado:'Activo',saldoCapital:1400,saldoUtilidad:750,cuotasPend:10,cuotasCanc:15,notas:'',colorType:'green',abonado:0,historial:[]},
+  {id:7,cedula:'6,677,889',nombre:'JOSE REYES VILCA',direccion:'Cra 22 #44-30',telefono:'315 333 4455',email:'',ruta:'YULIANPLAYA',prioridad:7,garante:'',creditoNo:'337917',fechaIni:'2026-04-01',fechaFin:'2026-06-30',capital:2160,cuota:120,cuotasPactadas:20,fechaCuota:'2026-04-02',formaPago:'DIARIA',estado:'Activo',saldoCapital:2160,saldoUtilidad:480,cuotasPend:18,cuotasCanc:2,notas:'',colorType:'yellow',abonado:0,historial:[]},
+  {id:8,cedula:'2,233,445',nombre:'FREDY DE LA CRUZ VULCANIZADOR',direccion:'Av Industrial #12',telefono:'317 600 1122',email:'',ruta:'YULIANPLAYA',prioridad:8,garante:'',creditoNo:'337918',fechaIni:'2026-03-28',fechaFin:'2026-06-28',capital:5400,cuota:300,cuotasPactadas:20,fechaCuota:'2026-03-29',formaPago:'DIARIA',estado:'Atrasado',saldoCapital:5400,saldoUtilidad:1200,cuotasPend:18,cuotasCanc:2,notas:'Dos fechas sin pagar',colorType:'red',abonado:0,historial:[]},
+];
+
+let gastosDia=[];
+let cobradoHoy=0;
+
+// ════════════════════════════════════════
+// CLOCK
+// ════════════════════════════════════════
+function updateClock(){
+  const now=new Date();
+  const s=now.toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  const el=document.getElementById('tb-date');if(el)el.textContent=s;
+  const sb=document.getElementById('sb-date');if(sb)sb.textContent=todayFmt();
+  const tot=document.getElementById('tot-fecha');if(tot)tot.textContent=todayShort();
+}
+updateClock();
+setInterval(updateClock,30000);
+
+// Init dates
+document.getElementById('f-fecha-ini').value=today();
+document.getElementById('f-fecha-cuota').value=today();
+document.getElementById('g-fecha').value=today();
+document.getElementById('vf-fecha-ini').value=today();
+document.getElementById('vf-fecha-cuota').value=today();
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+const VIEW_TITLES={
+  listado:'<i class="ti ti-layout-list"></i> LISTADO GENERAL',
+  'nuevo-cliente':'<i class="ti ti-user-plus"></i> CLIENTES NUEVOS',
+  ventas:'<i class="ti ti-credit-card"></i> VENTAS NUEVAS',
+  gastos:'<i class="ti ti-currency-dollar"></i> GASTOS DEL DÍA',
+  totalizar:'<i class="ti ti-math-function"></i> TOTALIZAR VENTAS',
+  rutas:'<i class="ti ti-world"></i> ENRUTA CLIENTES',
+  prioridad:'<i class="ti ti-stack-2"></i> POR PRIORIDAD',
+  activar:'<i class="ti ti-map-pin-share"></i> ACTIVAR CLIENTES',
+  morosos:'<i class="ti ti-map-pin-exclamation"></i> CLIENTES MOROSOS',
+  consultas:'<i class="ti ti-search"></i> CONSULTAS DATOS',
+  actualizar:'<i class="ti ti-zoom-replace"></i> ACTUALIZAR DATOS',
+  clave:'<i class="ti ti-key"></i> CAMBIAR CLAVE',
+  opciones:'<i class="ti ti-settings"></i> OTRAS OPCIONES',
+};
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.mi[data-view]').forEach(m=>m.classList.remove('active'));
+  let el=document.getElementById('view-'+name);
+  if(!el){el=document.getElementById('view-listado');name='listado';}
+  const GENERIC=['rutas','prioridad','activar','consultas','actualizar','clave','opciones'];
+  if(GENERIC.includes(name))renderPlaceholder(el,name);
+  if(name==='listado'){renderStats();renderCollTable();}
+  if(name==='morosos')renderMorosos();
+  if(name==='totalizar')updateTotales();
+  if(name==='gastos')renderGastos();
+  el.classList.add('active');
+  const m=document.querySelector(`.mi[data-view="${name}"]`);
+  if(m)m.classList.add('active');
+  const t=document.getElementById('tb-title');
+  if(t)t.innerHTML=VIEW_TITLES[name]||VIEW_TITLES.listado;
+}
+
+function renderPlaceholder(el,name){
+  const labels={rutas:'Enruta Clientes',prioridad:'Por Prioridad',activar:'Activar Clientes',consultas:'Consultas Datos',actualizar:'Actualizar Datos',clave:'Cambiar Clave',opciones:'Otras Opciones'};
+  el.innerHTML=`<div class="placeholder-view"><i class="ti ti-tools"></i><h3>${labels[name]||name}</h3><p>Este módulo estará disponible en la próxima actualización.</p><button class="btn btn-outline" style="margin-top:16px" onclick="showView('listado')"><i class="ti ti-arrow-left"></i> Volver al listado</button></div>`;
+}
+
+// ════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════
+function renderStats(){
+  const total=clients.length;
+  const activos=clients.filter(c=>c.estado==='Activo').length;
+  const morosos=clients.filter(c=>c.estado==='Atrasado').length;
+  document.getElementById('badge-morosos').textContent=morosos;
+  const meta=clients.reduce((a,c)=>a+c.cuota,0);
+  const el=document.getElementById('stats-row');
+  if(!el)return;
+  el.innerHTML=`
+    <div class="scard blue"><div class="scard-lbl"><i class="ti ti-users" style="font-size:14px"></i>Total créditos</div><div class="scard-val">${total}</div><div class="scard-sub">en cartera activa</div></div>
+    <div class="scard green"><div class="scard-lbl"><i class="ti ti-circle-check" style="font-size:14px"></i>Al día</div><div class="scard-val">${activos}</div><div class="scard-sub">créditos activos</div></div>
+    <div class="scard red"><div class="scard-lbl"><i class="ti ti-alert-circle" style="font-size:14px"></i>Morosos</div><div class="scard-val">${morosos}</div><div class="scard-sub">con atraso</div></div>
+    <div class="scard orange"><div class="scard-lbl"><i class="ti ti-target" style="font-size:14px"></i>Meta del día</div><div class="scard-val">$${fmt(meta)}</div><div class="scard-sub">a recaudar hoy</div></div>`;
+}
+
+// ════════════════════════════════════════
+// COLLECTION TABLE (LISTADO GENERAL)
+// ════════════════════════════════════════
+function rowClass(c){
+  if(c.colorType==='red')return'row-red';
+  if(c.colorType==='purple')return'row-purple';
+  if(c.colorType==='green')return'row-green';
+  if(c.colorType==='blue')return'row-blue';
+  return'row-yellow';
+}
+
+function renderCollTable(){
+  const q=(document.getElementById('coll-search')||{value:''}).value.toLowerCase();
+  const gs=(document.getElementById('global-search')||{value:''}).value.toLowerCase();
+  const search=q||gs;
+  const list=clients.filter(c=>!search||c.nombre.toLowerCase().includes(search)||c.cedula.includes(search));
+  const tbody=document.getElementById('coll-tbody');
+  if(!tbody)return;
+  if(!list.length){
+    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;padding:28px;color:var(--text3)"><i class="ti ti-search" style="font-size:24px;display:block;margin:0 auto 8px;opacity:.3"></i>Sin resultados</td></tr>`;
+    return;
+  }
+  const cobrado=clients.reduce((a,c)=>a+(c.abonado||0),0);
+  cobradoHoy=cobrado;
+  const ci=document.getElementById('ci-cobrado');if(ci)ci.textContent='$'+fmt(cobrado);
+  const cit=document.getElementById('ci-total');if(cit)cit.textContent=clients.length;
+  const cip=document.getElementById('ci-pendientes');if(cip)cip.textContent=clients.filter(c=>!c.abonado).length;
+  const fc=document.getElementById('footer-cobrado');
+  if(fc)fc.innerHTML=`<i class="ti ti-circle-check" style="vertical-align:-2px;margin-right:4px"></i>Total cobrado hoy: <strong>$ ${fmt(cobrado)}</strong>`;
+  tbody.innerHTML=list.map(c=>`
+    <tr class="${rowClass(c)}">
+      <td><span class="cpen-cell">${c.cuotasPend}</span></td>
+      <td><span class="ccan-cell">${c.cuotasCanc}</span></td>
+      <td class="num-cell" style="color:${c.saldoCapital>5000?'var(--red)':'var(--text)'}">$${fmt(c.saldoCapital)}</td>
+      <td class="left" style="font-weight:600;font-size:12px;min-width:160px">${c.nombre}</td>
+      <td class="num-cell">$${fmt(c.cuota)}</td>
+      <td><input class="abono-input" type="text" id="abono-${c.id}" value="${c.abonado?fmt(c.abonado):''}" placeholder="${fmt(c.cuota)}" ${c.abonado?'readonly':''}></td>
+      <td></td>
+      <td>${c.abonado?`<button class="click-btn applied" disabled><i class="ti ti-check"></i> OK</button>`:`<button class="click-btn" onclick="aplicarAbono(${c.id})">CLICK</button>`}</td>
+      <td>${c.abonado?`<span class="aplicado-badge"><i class="ti ti-check" style="font-size:11px"></i> ${todayShort()}</span>`:'<span style="color:var(--text3);font-size:11px">—</span>'}</td>
+      <td>${c.estado==='Atrasado'?`<span class="status-pill sp-late">ATRASADO</span>`:`<span class="status-pill sp-active">ACTIVO</span>`}</td>
+      <td><span class="pago-badge">${c.formaPago||'DIARIA'}</span></td>
+      <td><button class="detalles-btn" onclick="openDetalle(${c.id})">DETALLES</button></td>
+    </tr>`).join('');
+}
+
+function aplicarAbono(id){
+  const c=clients.find(x=>x.id===id);if(!c)return;
+  const inp=document.getElementById('abono-'+id);
+  const val=unf(inp.value)||c.cuota;
+  if(val<=0){showToast('Ingresa el valor del abono','warn');return;}
+  c.abonado=val;
+  c.saldoCapital=Math.max(0,c.saldoCapital-val);
+  if(c.cuotasPend>0){c.cuotasPend--;c.cuotasCanc++;}
+  c.historial.push({fecha:todayShort(),valor:val});
+  renderStats();
+  renderCollTable();
+  updateTotales();
+  showToast(`Abono de $${fmt(val)} aplicado a ${c.nombre}`,'success');
+}
+
+function openDetalle(id){
+  const c=clients.find(x=>x.id===id);if(!c)return;
+  const [bg,tc]=rndColor(c.nombre);
+  document.getElementById('modal-nombre-title').textContent=c.nombre;
+  document.getElementById('modal-edit-btn').onclick=()=>{closeModal('overlay-detalle');editClient(id);};
+  const hist=c.historial.length?c.historial.slice(-5).reverse().map(h=>`<div class="hist-row"><span class="hist-date"><i class="ti ti-calendar" style="vertical-align:-2px;margin-right:3px"></i>${h.fecha}</span><span class="hist-amount">+$${fmt(h.valor)}</span></div>`).join(''):`<div style="color:var(--text3);font-size:12px;text-align:center;padding:10px">Sin pagos registrados</div>`;
+  const total=c.saldoCapital+c.saldoUtilidad;
+  const pct=c.cuotasCanc+c.cuotasPend>0?Math.round(c.cuotasCanc/(c.cuotasCanc+c.cuotasPend)*100):0;
+  const barColor=pct>=75?'pf-green':pct>=40?'pf-orange':'pf-red';
+  document.getElementById('modal-detalle-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:#f7f9fc;border-radius:9px;">
+      <div style="width:44px;height:44px;border-radius:50%;background:${bg};color:${tc};font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(c.nombre)}</div>
+      <div><div style="font-size:15px;font-weight:700;color:var(--navy)">${c.nombre}</div><div style="font-size:11px;color:var(--text3)">Cédula: ${c.cedula} · Ruta: ${c.ruta} · Crédito: ${c.creditoNo}</div></div>
+    </div>
+    <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:3px"><span>Progreso del crédito</span><span>${pct}% pagado</span></div><div class="prog"><div class="prog-fill ${barColor}" style="width:${pct}%"></div></div></div>
+    <div class="detail-section">Contacto</div>
+    <div class="detail-row"><span class="detail-lbl">Teléfono</span><span class="detail-val">${c.telefono||'—'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Dirección</span><span class="detail-val">${c.direccion||'—'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Garante</span><span class="detail-val">${c.garante||'—'}</span></div>
+    <div class="detail-section">Crédito</div>
+    <div class="detail-row"><span class="detail-lbl">Capital</span><span class="detail-val money">$${fmt(c.capital)}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Cuota fija</span><span class="detail-val money">$${fmt(c.cuota)}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Forma de pago</span><span class="detail-val">${c.formaPago}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Cuotas pactadas</span><span class="detail-val">${c.cuotasPactadas}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Cuotas pendientes</span><span class="detail-val red">${c.cuotasPend}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Cuotas canceladas</span><span class="detail-val green">${c.cuotasCanc}</span></div>
+    <div class="detail-section">Saldos</div>
+    <div class="detail-row"><span class="detail-lbl">Saldo capital</span><span class="detail-val money ${c.saldoCapital>0?'red':''}">${c.saldoCapital>0?'$'+fmt(c.saldoCapital):'Pagado'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Saldo utilidad</span><span class="detail-val money">$${fmt(c.saldoUtilidad)}</span></div>
+    <div class="detail-row" style="background:#e8f8ef"><span class="detail-lbl" style="color:var(--green2);font-weight:700">TOTAL DEUDA</span><span class="detail-val money" style="color:var(--green);font-size:16px">$${fmt(total)}</span></div>
+    ${c.notas?`<div class="detail-section">Notas</div><div style="font-size:12px;color:var(--text2);padding:8px 0">${c.notas}</div>`:''}
+    <div class="detail-section">Últimos pagos</div>
+    <div>${hist}</div>`;
+  document.getElementById('overlay-detalle').classList.add('open');
+}
+
+// ════════════════════════════════════════
+// FORM: NUEVO CLIENTE
+// ════════════════════════════════════════
+let editingId=null;
+
+function resetForm(){
+  editingId=null;
+  ['cedula','nombre','direccion','telefono','email','ruta','garante','capital','cuota','notas','saldo-capital','saldo-utilidad','saldo-total','total-deuda','plazo','tasa'].forEach(id=>{
+    const el=document.getElementById('f-'+id);if(el)el.value='';
+  });
+  document.getElementById('f-credito').value='CR-'+nextCredito;
+  document.getElementById('f-fecha-ini').value=today();
+  document.getElementById('f-fecha-cuota').value=today();
+  document.getElementById('f-fecha-fin').value='';
+  document.getElementById('f-cuotas-pactadas').value='';
+  document.getElementById('f-cuotas-pend').value='';
+  document.getElementById('f-cuotas-canc').value='';
+  document.getElementById('f-estado').value='Activo';
+  document.getElementById('f-forma-pago').value='';
+  document.getElementById('f-prioridad').value='';
+  document.getElementById('f-prioridad-actual').value='';
+  document.getElementById('disp-pend').textContent='0';
+  document.getElementById('disp-canc').textContent='0';
+  document.getElementById('nc-detail-header').innerHTML='';
+}
+
+function populateForm(c){
+  editingId=c.id;
+  document.getElementById('f-cedula').value=c.cedula;
+  document.getElementById('f-nombre').value=c.nombre;
+  document.getElementById('f-direccion').value=c.direccion||'';
+  document.getElementById('f-telefono').value=c.telefono||'';
+  document.getElementById('f-email').value=c.email||'';
+  document.getElementById('f-ruta').value=c.ruta||'';
+  document.getElementById('f-garante').value=c.garante||'';
+  document.getElementById('f-credito').value=c.creditoNo||'';
+  document.getElementById('f-fecha-ini').value=c.fechaIni||'';
+  document.getElementById('f-fecha-fin').value=c.fechaFin||'';
+  document.getElementById('f-capital').value=fmt(c.capital);
+  document.getElementById('f-cuota').value=fmt(c.cuota);
+  document.getElementById('f-cuotas-pactadas').value=c.cuotasPactadas||'';
+  document.getElementById('f-fecha-cuota').value=c.fechaCuota||'';
+  document.getElementById('f-forma-pago').value=c.formaPago||'';
+  document.getElementById('f-estado').value=c.estado||'Activo';
+  document.getElementById('f-prioridad').value=c.prioridad||'';
+  document.getElementById('f-prioridad-actual').value=c.prioridad||'';
+  document.getElementById('f-saldo-capital').value=fmt(c.saldoCapital);
+  document.getElementById('f-saldo-utilidad').value=fmt(c.saldoUtilidad);
+  document.getElementById('f-saldo-total').value=fmt(c.saldoCapital+c.saldoUtilidad);
+  document.getElementById('f-cuotas-pend').value=c.cuotasPend||0;
+  document.getElementById('f-cuotas-canc').value=c.cuotasCanc||0;
+  document.getElementById('f-notas').value=c.notas||'';
+  document.getElementById('f-total-deuda').value=fmt(c.saldoCapital+c.saldoUtilidad);
+  document.getElementById('disp-pend').textContent=c.cuotasPend||0;
+  document.getElementById('disp-canc').textContent=c.cuotasCanc||0;
+  const plazo=c.cuotasPactadas||0;
+  document.getElementById('f-plazo').value=plazo+' días';
+  const capitalN=c.capital;const cuotaN=c.cuota;
+  const tasa=capitalN>0&&cuotaN>0?((cuotaN*plazo-capitalN)/capitalN*100).toFixed(4):0;
+  document.getElementById('f-tasa').value=tasa+' %';
+  const [bg,tc]=rndColor(c.nombre);
+  const pct=c.cuotasCanc+c.cuotasPend>0?Math.round(c.cuotasCanc/(c.cuotasCanc+c.cuotasPend)*100):0;
+  document.getElementById('nc-detail-header').innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:12px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;color:#fff;flex-wrap:wrap;">
+      <div style="width:44px;height:44px;border-radius:50%;background:${bg};color:${tc};font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(c.nombre)}</div>
+      <div style="flex:1"><div style="font-size:15px;font-weight:700">${c.nombre}</div><div style="font-size:11px;color:rgba(255,255,255,.5)">Cédula: ${c.cedula} · Crédito: ${c.creditoNo}</div></div>
+      <div style="display:flex;gap:16px;">
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700">$${fmt(c.saldoCapital+c.saldoUtilidad)}</div><div style="font-size:9px;color:rgba(255,255,255,.4)">DEUDA TOTAL</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700">${pct}%</div><div style="font-size:9px;color:rgba(255,255,255,.4)">PAGADO</div></div>
+      </div>
+    </div>`;
+}
+
+function editClient(id){
+  const c=clients.find(x=>x.id===id);if(!c)return;
+  populateForm(c);showView('nuevo-cliente');
+}
+
+function calcAuto(){
+  const capital=unf(document.getElementById('f-capital').value);
+  const cuota=unf(document.getElementById('f-cuota').value);
+  const cuotas=parseInt(document.getElementById('f-cuotas-pactadas').value)||0;
+  if(cuotas>0)document.getElementById('f-plazo').value=cuotas+' días';
+  if(capital>0&&cuota>0&&cuotas>0){
+    const total=cuota*cuotas;
+    const utilidad=total-capital;
+    const tasa=((utilidad/capital)*100).toFixed(4);
+    document.getElementById('f-tasa').value=tasa+' %';
+    document.getElementById('f-saldo-capital').value=fmt(capital);
+    document.getElementById('f-saldo-utilidad').value=fmt(utilidad>0?utilidad:0);
+    calcTotal();
+  }
+}
+
+function calcTotal(){
+  const sc=unf(document.getElementById('f-saldo-capital').value);
+  const su=unf(document.getElementById('f-saldo-utilidad').value);
+  document.getElementById('f-saldo-total').value=fmt(sc+su);
+  document.getElementById('f-total-deuda').value=fmt(sc+su);
+}
+
+function updateDisp(){
+  document.getElementById('disp-pend').textContent=document.getElementById('f-cuotas-pend').value||0;
+  document.getElementById('disp-canc').textContent=document.getElementById('f-cuotas-canc').value||0;
+}
+
+function generarCuota(){
+  calcAuto();
+  showToast('Cuota generada correctamente','success');
+}
+
+function clearForm(){resetForm();showToast('Formulario limpiado','');}
+
+function saveClient(){
+  const cedula=document.getElementById('f-cedula').value.trim();
+  const nombre=document.getElementById('f-nombre').value.trim();
+  const telefono=document.getElementById('f-telefono').value.trim();
+  const ruta=document.getElementById('f-ruta').value.trim();
+  const direccion=document.getElementById('f-direccion').value.trim();
+  if(!cedula||!nombre||!ruta||!direccion){showToast('Completa los campos obligatorios (*)','error');return;}
+  const data={
+    cedula,nombre,telefono,
+    email:document.getElementById('f-email').value.trim(),
+    ruta,direccion,
+    garante:document.getElementById('f-garante').value.trim(),
+    creditoNo:document.getElementById('f-credito').value.trim()||'CR-'+nextCredito,
+    fechaIni:document.getElementById('f-fecha-ini').value,
+    fechaFin:document.getElementById('f-fecha-fin').value,
+    capital:unf(document.getElementById('f-capital').value),
+    cuota:unf(document.getElementById('f-cuota').value),
+    cuotasPactadas:parseInt(document.getElementById('f-cuotas-pactadas').value)||0,
+    fechaCuota:document.getElementById('f-fecha-cuota').value,
+    formaPago:document.getElementById('f-forma-pago').value,
+    estado:document.getElementById('f-estado').value,
+    prioridad:parseInt(document.getElementById('f-prioridad').value)||clients.length+1,
+    saldoCapital:unf(document.getElementById('f-saldo-capital').value),
+    saldoUtilidad:unf(document.getElementById('f-saldo-utilidad').value),
+    cuotasPend:parseInt(document.getElementById('f-cuotas-pend').value)||0,
+    cuotasCanc:parseInt(document.getElementById('f-cuotas-canc').value)||0,
+    notas:document.getElementById('f-notas').value.trim(),
+    colorType:'yellow',abonado:0,historial:[],
+  };
+  if(editingId){
+    const idx=clients.findIndex(c=>c.id===editingId);
+    if(idx>=0)clients[idx]={...clients[idx],...data};
+    showToast('Cliente actualizado correctamente','success');
+  }else{
+    data.id=nextId++;nextCredito++;
+    clients.push(data);
+    showToast('Cliente registrado correctamente','success');
+  }
+  renderStats();
+  setTimeout(()=>showView('listado'),700);
+}
+
+// ════════════════════════════════════════
+// VENTAS NUEVAS
+// ════════════════════════════════════════
+let ventaClienteId=null;
+
+function setupVentaAC(inputId,listId,field,cb){
+  const input=document.getElementById(inputId);
+  const list=document.getElementById(listId);
+  if(!input||!list)return;
+  input.addEventListener('input',()=>{
+    const v=input.value.trim().toLowerCase();
+    list.innerHTML='';
+    if(!v){list.classList.remove('open');return;}
+    const m=clients.filter(c=>String(c[field]).toLowerCase().includes(v)).slice(0,7);
+    if(!m.length){list.classList.remove('open');return;}
+    m.forEach(c=>{
+      const div=document.createElement('div');
+      div.className='ac-item';
+      div.textContent=field==='cedula'?c.cedula+' — '+c.nombre:c.nombre+' ('+c.cedula+')';
+      div.addEventListener('mousedown',e=>{e.preventDefault();cb(c);list.classList.remove('open');});
+      list.appendChild(div);
+    });
+    list.classList.add('open');
+  });
+  input.addEventListener('blur',()=>setTimeout(()=>list.classList.remove('open'),150));
+}
+
+function fillVentaClient(c){
+  ventaClienteId=c.id;
+  document.getElementById('vf-cedula').value=c.cedula;
+  document.getElementById('vf-nombre').value=c.nombre;
+  document.getElementById('vf-ruta').value=c.ruta;
+  document.getElementById('vf-dir').value=c.direccion||'';
+  document.getElementById('vf-tel').value=c.telefono||'';
+  document.getElementById('vf-credito').value='CR-'+nextCredito;
+  document.getElementById('vf-fecha-ini').value=today();
+  document.getElementById('vf-fecha-cuota').value=today();
+  document.getElementById('venta-client-info').style.display='block';
+  document.getElementById('venta-form').style.display='block';
+  document.getElementById('venta-saldos').style.display='none';
+  showToast('Cliente cargado: '+c.nombre,'success');
+}
+
+function calcVenta(){
+  const capital=unf(document.getElementById('vf-capital').value);
+  const cuota=unf(document.getElementById('vf-cuota').value);
+  const cuotas=parseInt(document.getElementById('vf-cuotas').value)||0;
+  if(capital>0&&cuota>0&&cuotas>0){
+    const total=cuota*cuotas;
+    const util=Math.max(0,total-capital);
+    const tasa=((util/capital)*100).toFixed(4);
+    document.getElementById('vf-tasa').value=tasa+' %';
+    document.getElementById('vf-saldo-cap').value=fmt(capital);
+    document.getElementById('vf-saldo-util').value=fmt(util);
+    document.getElementById('vf-total').value=fmt(capital+util);
+    document.getElementById('venta-saldos').style.display='block';
+    showToast('Cuota calculada: $'+fmt(cuota)+' x '+cuotas+' = $'+fmt(total),'success');
+  }
+}
+
+function saveVenta(){
+  if(!ventaClienteId){showToast('Primero busca y selecciona un cliente','warn');return;}
+  const capital=unf(document.getElementById('vf-capital').value);
+  const cuota=unf(document.getElementById('vf-cuota').value);
+  if(!capital||!cuota){showToast('Ingresa el capital y la cuota','error');return;}
+  const cuotas=parseInt(document.getElementById('vf-cuotas').value)||0;
+  const util=Math.max(0,(cuota*cuotas)-capital);
+  const c=clients.find(x=>x.id===ventaClienteId);
+  if(c){
+    c.creditoNo='CR-'+nextCredito;nextCredito++;
+    c.capital=capital;c.cuota=cuota;
+    c.cuotasPactadas=cuotas;
+    c.fechaIni=document.getElementById('vf-fecha-ini').value;
+    c.fechaFin=document.getElementById('vf-fecha-fin').value;
+    c.fechaCuota=document.getElementById('vf-fecha-cuota').value;
+    c.formaPago=document.getElementById('vf-forma').value;
+    c.saldoCapital=capital;c.saldoUtilidad=util;
+    c.cuotasPend=cuotas;c.cuotasCanc=0;
+    c.estado='Activo';c.abonado=0;c.historial=[];
+  }
+  showToast('Venta nueva guardada para '+c.nombre,'success');
+  clearVenta();
+  setTimeout(()=>showView('listado'),700);
+}
+
+function clearVenta(){
+  ventaClienteId=null;
+  ['vf-cedula','vf-nombre','vf-ruta','vf-dir','vf-tel','vf-capital','vf-cuota','vf-tasa','vf-saldo-cap','vf-saldo-util','vf-total'].forEach(id=>{
+    const el=document.getElementById(id);if(el&&!el.readOnly)el.value='';
+    if(el&&id.includes('saldo'))el.value='';
+  });
+  document.getElementById('vf-cuotas').value='';
+  document.getElementById('vf-credito').value='CR-'+nextCredito;
+  document.getElementById('vf-forma').value='';
+  document.getElementById('venta-client-info').style.display='none';
+  document.getElementById('venta-form').style.display='none';
+  document.getElementById('venta-saldos').style.display='none';
+}
+
+// ════════════════════════════════════════
+// GASTOS
+// ════════════════════════════════════════
+function grabarGasto(){
+  const valor=unf(document.getElementById('g-valor').value);
+  const nombre=document.getElementById('g-nombre').value;
+  const concepto=document.getElementById('g-concepto').value.trim();
+  if(!valor||!nombre){showToast('Completa el valor y nombre del gasto','error');return;}
+  gastosDia.push({id:Date.now(),fecha:document.getElementById('g-fecha').value||today(),valor,nombre,concepto,tipo:'OPERACIONAL'});
+  document.getElementById('g-valor').value='';
+  document.getElementById('g-nombre').value='';
+  document.getElementById('g-concepto').value='';
+  renderGastos();
+  showToast('Gasto registrado: $'+fmt(valor),'success');
+  updateTotales();
+}
+
+function eliminarGasto(id){
+  gastosDia=gastosDia.filter(g=>g.id!==id);
+  renderGastos();updateTotales();
+  showToast('Gasto eliminado','error');
+}
+
+function renderGastos(){
+  const items=document.getElementById('gastos-items');
+  const count=document.getElementById('gastos-count');
+  const total=document.getElementById('gastos-total');
+  if(!items)return;
+  const sum=gastosDia.reduce((a,g)=>a+g.valor,0);
+  if(count)count.textContent=gastosDia.length+' gastos';
+  if(total)total.textContent='$ '+fmt(sum);
+  if(!gastosDia.length){
+    items.innerHTML=`<div style="text-align:center;padding:24px;color:var(--text3);font-size:12px;"><i class="ti ti-inbox" style="font-size:28px;display:block;margin:0 auto 8px;opacity:.3"></i>Sin gastos registrados hoy</div>`;
+    return;
+  }
+  items.innerHTML=gastosDia.map(g=>`
+    <div class="gasto-row">
+      <div class="gasto-dot"></div>
+      <div style="flex:1">
+        <div class="gasto-nombre">${g.nombre}</div>
+        <div class="gasto-concepto">${g.concepto||'Sin concepto'}</div>
+      </div>
+      <div class="gasto-valor">-$${fmt(g.valor)}</div>
+      <button class="gasto-del" onclick="eliminarGasto(${g.id})" title="Eliminar"><i class="ti ti-trash" style="font-size:15px"></i></button>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════
+// TOTALIZAR
+// ════════════════════════════════════════
+function updateTotales(){
+  const cobrado=clients.reduce((a,c)=>a+(c.abonado||0),0);
+  const gastos=gastosDia.reduce((a,g)=>a+g.valor,0);
+  const nuevos=clients.filter(c=>c.creditoNo&&c.cuotasCanc===0).reduce((a,c)=>a+c.capital,0);
+  const meta=clients.reduce((a,c)=>a+c.cuota,0);
+  const real=cobrado-gastos-nuevos;
+  const efectivo=unf((document.getElementById('tot-efectivo')||{value:0}).value);
+  const diff=efectivo-real;
+  const faltante=diff<0?Math.abs(diff):0;
+  const sobrante=diff>0?diff:0;
+  const set=(id,v,pre='$')=>{const el=document.getElementById(id);if(el)el.textContent=pre+fmt(v);};
+  set('tot-meta',meta);
+  set('tot-cobrado',cobrado);
+  set('tot-gastos',gastos);
+  set('tot-nuevos',nuevos);
+  set('tot-real',real);
+  set('tot-faltante',faltante);
+  set('tot-sobrante',sobrante);
+}
+
+function calcTotales(){updateTotales();}
+
+function totalizarCobro(){
+  updateTotales();
+  showToast('Liquidación cerrada exitosamente','success');
+}
+
+// ════════════════════════════════════════
+// MOROSOS
+// ════════════════════════════════════════
+function renderMorosos(){
+  const el=document.getElementById('view-morosos');if(!el)return;
+  const m=clients.filter(c=>c.estado==='Atrasado');
+  if(!m.length){el.innerHTML=`<div class="empty"><i class="ti ti-circle-check" style="color:var(--green)"></i><p style="color:var(--green);font-size:15px;font-weight:700">¡Sin clientes morosos hoy!</p></div>`;return;}
+  const rows=m.map(c=>`<tr class="row-red">
+    <td class="left" style="font-weight:600">${c.nombre}</td>
+    <td style="font-family:'DM Mono',monospace">${c.cedula}</td>
+    <td>${c.telefono||'—'}</td>
+    <td><span style="background:#e3f2fd;color:#1565c0;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700">${c.ruta}</span></td>
+    <td style="font-family:'DM Mono',monospace;color:var(--red);font-weight:700">$${fmt(c.saldoCapital+c.saldoUtilidad)}</td>
+    <td><span class="cpen-cell">${c.cuotasPend}</span></td>
+    <td><span class="status-pill sp-late">ATRASADO</span></td>
+    <td><button class="detalles-btn" onclick="openDetalle(${c.id})">DETALLES</button></td>
+  </tr>`).join('');
+  el.innerHTML=`<div class="scard red" style="margin-bottom:14px;display:inline-flex;align-items:center;gap:10px;padding:12px 18px"><i class="ti ti-alert-circle" style="font-size:22px;color:var(--red)"></i><div><div class="scard-val" style="font-size:18px">${m.length} clientes morosos</div><div class="scard-sub">con pagos en atraso</div></div></div>
+  <div class="morosos-card"><div style="overflow-x:auto"><table class="coll-tbl"><thead><tr><th class="left">Cliente</th><th>Cédula</th><th>Teléfono</th><th>Ruta</th><th>Deuda total</th><th>C.Pend</th><th>Estado</th><th>Acción</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+
+// ════════════════════════════════════════
+// AUTOCOMPLETE (Nuevo Cliente form)
+// ════════════════════════════════════════
+function setupAC(inputId,listId,dataFn,onSel){
+  const input=document.getElementById(inputId);
+  const list=document.getElementById(listId);
+  if(!input||!list)return;
+  input.addEventListener('input',()=>{
+    const v=input.value.trim().toLowerCase();
+    list.innerHTML='';
+    if(!v){list.classList.remove('open');return;}
+    const m=dataFn(v).slice(0,7);
+    if(!m.length){list.classList.remove('open');return;}
+    m.forEach(item=>{
+      const div=document.createElement('div');
+      div.className='ac-item';
+      div.textContent=item.label||item;
+      div.addEventListener('mousedown',e=>{e.preventDefault();onSel(item);list.classList.remove('open');});
+      list.appendChild(div);
+    });
+    list.classList.add('open');
+  });
+  input.addEventListener('blur',()=>setTimeout(()=>list.classList.remove('open'),150));
+}
+
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+let toastTimer;
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  const ic=document.getElementById('toast-icon');
+  const m=document.getElementById('toast-msg');
+  const icons={success:'ti-circle-check',error:'ti-alert-circle',warn:'ti-alert-triangle','':`ti-info-circle`};
+  t.className='toast'+(type?' '+type:'');
+  ic.className='ti '+(icons[type]||'ti-info-circle');
+  m.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function refreshData(){renderStats();renderCollTable();showToast('Datos actualizados','success');}
+
+// Close modal on overlay click
+['overlay-detalle','overlay-confirm'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('click',e=>{if(e.target===el)closeModal(id);});
+});
+
+// ════════════════════════════════════════
+// SALIR
+// ════════════════════════════════════════
+document.getElementById('salir-btn').addEventListener('click',()=>{
+  document.getElementById('confirm-title-text').textContent='Salir del Sistema';
+  document.getElementById('confirm-msg').textContent='¿Deseas cerrar la sesión del sistema? Asegúrate de haber guardado todos los cambios.';
+  document.getElementById('confirm-ok').onclick=()=>{closeModal('overlay-confirm');showToast('Sesión cerrada. ¡Hasta pronto!','');};
+  document.getElementById('overlay-confirm').classList.add('open');
+});
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+function init(){
+  // Sidebar navigation
+  document.querySelectorAll('.mi[data-view]').forEach(item=>{
+    item.addEventListener('click',()=>showView(item.dataset.view));
+  });
+  // Global search
+  document.getElementById('global-search').addEventListener('input',()=>{
+    renderCollTable();
+    if(!document.querySelector('#view-listado.active'))showView('listado');
+  });
+  // Collection table search
+  const cs=document.getElementById('coll-search');
+  if(cs)cs.addEventListener('input',renderCollTable);
+
+  // Autocomplete: New client form
+  setupAC('f-cedula','ac-cedula',
+    v=>clients.filter(c=>c.cedula.includes(v)).map(c=>({label:c.cedula+' — '+c.nombre,c})),
+    item=>{document.getElementById('f-cedula').value=item.c.cedula;populateForm(item.c);}
+  );
+  setupAC('f-nombre','ac-nombre',
+    v=>clients.filter(c=>c.nombre.toLowerCase().includes(v)).map(c=>({label:c.nombre+' ('+c.cedula+')',c})),
+    item=>{document.getElementById('f-nombre').value=item.c.nombre;populateForm(item.c);}
+  );
+  setupAC('f-ruta','ac-ruta',
+    v=>[...new Set(clients.map(c=>c.ruta))].filter(r=>r.toLowerCase().includes(v)).map(r=>({label:r})),
+    item=>document.getElementById('f-ruta').value=item.label
+  );
+
+  // Ventas autocomplete
+  setupVentaAC('vf-cedula','vac-cedula','cedula',fillVentaClient);
+  setupVentaAC('vf-nombre','vac-nombre','nombre',fillVentaClient);
+
+  // Initial render
+  renderStats();
+  renderCollTable();
+  updateTotales();
+}
+
+init();
+</script>
+</html>
