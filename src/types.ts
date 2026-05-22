@@ -78,6 +78,16 @@ export interface Gasto {
   created_at: string;
 }
 
+export interface Suscripcion {
+  id: string;
+  user_id: string;
+  plan: string;
+  activa: boolean;
+  fecha_inicio: string;
+  fecha_fin: string | null;
+  created_at: string;
+}
+
 export type ViewName =
   | 'listado'
   | 'nuevo-cliente'
@@ -86,9 +96,5 @@ export type ViewName =
   | 'totalizar'
   | 'rutas'
   | 'prioridad'
-  | 'activar'
   | 'morosos'
-  | 'consultas'
-  | 'actualizar'
-  | 'clave'
-  | 'opciones';
+  | 'suscripcion';

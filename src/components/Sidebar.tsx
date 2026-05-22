@@ -1,8 +1,7 @@
-import React from 'react';
 import {
   LayoutList, UserPlus, CreditCard, DollarSign, Calculator,
-  Globe, Layers, MapPin, AlertTriangle, Search,
-  RefreshCw, Key, Settings, Power, Coins, ChevronRight
+  Globe, Layers, AlertTriangle,
+  Power, Coins, ChevronRight, Crown
 } from 'lucide-react';
 import { ViewName } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -29,15 +28,7 @@ const MENU = [
     items: [
       { view: 'rutas' as ViewName, label: 'Enruta Clientes', Icon: Globe },
       { view: 'prioridad' as ViewName, label: 'Por Prioridad', Icon: Layers },
-      { view: 'activar' as ViewName, label: 'Activar Clientes', Icon: MapPin },
       { view: 'morosos' as ViewName, label: 'Clientes Morosos', Icon: AlertTriangle, badge: true },
-    ],
-  },
-  {
-    section: 'Datos',
-    items: [
-      { view: 'consultas' as ViewName, label: 'Consultas Datos', Icon: Search },
-      { view: 'actualizar' as ViewName, label: 'Actualizar Datos', Icon: RefreshCw },
     ],
   },
 ];
@@ -95,11 +86,8 @@ export default function Sidebar({ currentView, onNavigate, morososCount }: Sideb
 
         <div className="sb-divider" />
 
-        <button className="mi" onClick={() => onNavigate('clave')}>
-          <Key size={16} /><span>Cambiar Clave</span>
-        </button>
-        <button className="mi" onClick={() => onNavigate('opciones')}>
-          <Settings size={16} /><span>Otras Opciones</span>
+        <button className="mi" onClick={() => onNavigate('suscripcion')}>
+          <Crown size={16} /><span>Mi Suscripción</span>
         </button>
         <button className="mi danger" onClick={signOut}>
           <Power size={16} /><span>Salir del Sistema</span>

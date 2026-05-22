@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { Cliente, Credito, Abono } from '../../types';
-import { Users, CheckCircle, AlertCircle, Target, Search, Plus, Eye, ChevronUp, ChevronDown } from 'lucide-react';
+import { Users, CheckCircle, AlertCircle, Target, Search, Plus, Eye } from 'lucide-react';
 import { fmt, today } from '../../utils';
 import { ToastType } from '../Toast';
 

@@ -164,7 +164,7 @@ export default function NuevoCliente({ editCliente, editCredito, onNavigate, sho
 
       showToast(editCliente ? 'Cliente actualizado' : 'Cliente registrado correctamente', 'success');
       setTimeout(() => onNavigate('listado'), 600);
-    } catch (e) {
+    } catch {
       showToast('Error inesperado', 'error');
     } finally {
       setSaving(false);

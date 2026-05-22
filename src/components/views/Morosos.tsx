@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { Cliente, Credito } from '../../types';
-import { fmt, today } from '../../utils';
+import { fmt } from '../../utils';
 import { AlertTriangle, Eye, CheckCircle } from 'lucide-react';
 import { ToastType } from '../Toast';
 
@@ -13,7 +13,7 @@ interface Props {
 
 interface Row { cliente: Cliente; credito: Credito; diasMora: number; }
 
-export default function Morosos({ onEditClient, showToast }: Props) {
+export default function Morosos({ onEditClient }: Props) {
   const { ruta } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);

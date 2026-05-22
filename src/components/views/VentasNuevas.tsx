@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
-import { Cliente, Credito } from '../../types';
+import { Cliente } from '../../types';
 import { fmt, unf, today } from '../../utils';
 import { Search, Save, Eraser, ArrowLeft, Receipt } from 'lucide-react';
 import { ToastType } from '../Toast';

@@ -208,6 +208,36 @@ INSERT INTO rutas (nombre, descripcion) VALUES
   ('CENTRO', 'Ruta centro ciudad')
 ON CONFLICT (nombre) DO NOTHING;
 
+-- Suscripciones
+CREATE TABLE IF NOT EXISTS suscripciones (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  plan text NOT NULL DEFAULT 'mensual',
+  activa boolean DEFAULT false,
+  fecha_inicio timestamptz DEFAULT now(),
+  fecha_fin timestamptz,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE suscripciones ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own suscripcion"
+  ON suscripciones FOR SELECT
+  TO authenticated
+  USING (user_id = auth.uid());
+
+CREATE POLICY "Users can insert own suscripcion"
+  ON suscripciones FOR INSERT
+  TO authenticated
+  WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can update own suscripcion"
+  ON suscripciones FOR UPDATE
+  TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_clientes_ruta ON clientes(ruta_id);
 CREATE INDEX IF NOT EXISTS idx_creditos_cliente ON creditos(cliente_id);

@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { supabase } from './lib/supabase';
 import AuthScreen from './components/AuthScreen';
 import Sidebar from './components/Sidebar';
 import Toast, { ToastType } from './components/Toast';
@@ -10,9 +11,9 @@ import Gastos from './components/views/Gastos';
 import Totalizar from './components/views/Totalizar';
 import EnrutaClientes from './components/views/EnrutaClientes';
 import Morosos from './components/views/Morosos';
-import PlaceholderView from './components/views/PlaceholderView';
+import SuscripcionView from './components/views/SuscripcionView';
 import { ViewName, Cliente, Credito } from './types';
-import { LayoutList, UserPlus, CreditCard, DollarSign, Calculator, Globe, Layers, MapPin, AlertTriangle, Search, RefreshCw, Key, Settings, RefreshCcw } from 'lucide-react';
+import { LayoutList, UserPlus, CreditCard, DollarSign, Calculator, Globe, Layers, AlertTriangle, RefreshCcw, Crown } from 'lucide-react';
 
 const VIEW_TITLES: Record<ViewName, { label: string; Icon: React.ElementType }> = {
   listado: { label: 'LISTADO GENERAL', Icon: LayoutList },
@@ -22,12 +23,8 @@ const VIEW_TITLES: Record<ViewName, { label: string; Icon: React.ElementType }> 
   totalizar: { label: 'TOTALIZAR VENTAS', Icon: Calculator },
   rutas: { label: 'ENRUTA CLIENTES', Icon: Globe },
   prioridad: { label: 'POR PRIORIDAD', Icon: Layers },
-  activar: { label: 'ACTIVAR CLIENTES', Icon: MapPin },
   morosos: { label: 'CLIENTES MOROSOS', Icon: AlertTriangle },
-  consultas: { label: 'CONSULTAS DATOS', Icon: Search },
-  actualizar: { label: 'ACTUALIZAR DATOS', Icon: RefreshCw },
-  clave: { label: 'CAMBIAR CLAVE', Icon: Key },
-  opciones: { label: 'OTRAS OPCIONES', Icon: Settings },
+  suscripcion: { label: 'MI SUSCRIPCIÓN', Icon: Crown },
 };
 
 interface ToastState { message: string; type: ToastType; key: number; }
@@ -39,6 +36,17 @@ function AppInner() {
   const [morososCount, setMorososCount] = useState(0);
   const [editCliente, setEditCliente] = useState<Cliente | undefined>();
   const [editCredito, setEditCredito] = useState<Credito | undefined>();
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('ruta_id').eq('id', user.id).maybeSingle().then(({ data: prof }) => {
+      if (prof?.ruta_id) {
+        supabase.from('creditos').select('id', { count: 'exact', head: true }).eq('ruta_id', prof.ruta_id).eq('estado', 'Atrasado').then(({ count }) => {
+          if (count !== null) setMorososCount(count);
+        });
+      }
+    });
+  }, [user]);
 
   const showToast = useCallback((message: string, type: ToastType) => {
     setToast({ message, type, key: Date.now() });
@@ -91,8 +99,8 @@ function AppInner() {
         return <EnrutaClientes showToast={showToast} />;
       case 'morosos':
         return <Morosos onEditClient={editClient} showToast={showToast} />;
-      default:
-        return <PlaceholderView title={label} onNavigate={navigate} />;
+      case 'suscripcion':
+        return <SuscripcionView showToast={showToast} />;
     }
   }
 

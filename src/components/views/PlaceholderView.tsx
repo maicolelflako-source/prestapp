@@ -1,4 +1,3 @@
-import React from 'react';
 import { Wrench, ArrowLeft } from 'lucide-react';
 
 interface Props {
